@@ -23,8 +23,15 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], f
             cc.Director.getInstance().setDisplayStats(false);
 
             var clc = cc.Layer.create();
+            var background = new cc.Sprite();
+            background.initWithFile(s_deep_water_background);
+            background.setPosition(size.width/2, size.height/2);
+            clc.addChild(background);
+            this.addChild(clc,0);
+
+            clc = cc.Layer.create();
             var dz = new DropZone();
-            dz.initWithFile(s_deep_water_background);
+            dz.initWithFile(s_digital_background);
             dz.setPosition(size.width / 2, size.height / 2);
             clc.addChild(dz);
             this.addChild(clc,0);
@@ -33,9 +40,13 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], f
             var dg = new Draggable();
             dg.initWithFile(s_add_pin_button);
             dg.setPosition(size.width / 2, size.height / 2);
+            dg.onMoved(function (position) {
+                console.log(dz.isPointInside(position));
+            });
             clc.addChild(dg);
             this.addChild(clc,0);
             this.registerControl(DRAGGABLE_PREFIX + 'one', dg);
+            clc = cc.Layer.create();
 
             return this;
         },
