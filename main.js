@@ -9,6 +9,7 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], f
     'use strict';
 
     var DRAGGABLE_PREFIX = 'DRAGGABLE_';
+    var DROPZONE_PREFIX = 'DROPZONE_';
 
     var Tool = ToolLayer.extend({
 
@@ -34,6 +35,7 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], f
             dz.initWithFile(s_digital_background);
             dz.setPosition(size.width / 2, size.height / 2);
             clc.addChild(dz);
+            this.registerControl(DROPZONE_PREFIX + 'one', dz);
             this.addChild(clc,0);
 
             clc = cc.Layer.create();
