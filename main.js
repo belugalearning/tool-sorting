@@ -70,7 +70,7 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], f
             return this;
         },
 
-        emptyFunction:function() {}
+        noop: function() {}
     });
 
     ToolLayer.create = function () {
