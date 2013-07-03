@@ -26,6 +26,7 @@ define(['cocos2d'], function (cc) {
         },
 
         onTouchEnded: function (touch, event) {
+            this._super(touch, event);
             this._onMoved(touch.getLocation());
         },
 
