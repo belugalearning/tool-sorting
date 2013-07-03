@@ -35,6 +35,7 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], f
             var dz = new DropZone();
             dz.initWithFile(s_digital_background);
             dz.setPosition(size.width / 2, size.height / 2);
+            dz.setPoints([{x:10, y:10}, {x:100, y:100}, {x:200, y:100}, {x:150, y:50}]);
             clc.addChild(dz);
             this.registerControl(DROPZONE_PREFIX + 'one', dz);
             this.addChild(clc,0);
@@ -44,6 +45,16 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], f
             dg.initWithFile(s_add_pin_button);
             dg.setPosition(size.width / 2, size.height / 2);
             dg.onMoved(function (position, draggable) {
+                var dzs = self.getControls(DROPZONE_PREFIX);
+                _.each(dzs, function(dz) {
+                    if (dz.isPointInsideArea(position)) {
+                        dz.showArea();
+                    } else {
+                        dz.hideArea();
+                    }
+                });
+            });
+            dg.onMoveEnded(function (position, draggable) {
                 var dzs = self.getControls(DROPZONE_PREFIX);
                 _.each(dzs, function(dz) {
                     if (dz.isPointInside(position)) {
