@@ -2,13 +2,10 @@ require.config({
     paths: {}
 });
 
-define(['cocos2d', 'qlayer'], function () {
+define(['exports', 'cocos2d', 'qlayer', 'toollayer'], function (exports, cc, QLayer, ToolLayer) {
     'use strict';
 
-    var PropertyDisplays = constants['PropertyDisplays'];
-
-    var ToolLayer = cc.Layer.extend({
-
+    var Tool = ToolLayer.extend({
 
         init: function () {
 
@@ -42,10 +39,7 @@ define(['cocos2d', 'qlayer'], function () {
 
         scene.layer=layer;
 
-        // scene.setMouseEnabled(true);
-        // scene.onMouseDown=function(event){cc.log("mouse down");};
-
-        scene.ql=new QLayer();
+        scene.ql = new QLayer();
         scene.ql.init();
         layer.addChild(scene.ql, 99);
 
@@ -59,8 +53,6 @@ define(['cocos2d', 'qlayer'], function () {
         return scene;
     };
 
-    return {
-        'ToolLayer': ToolLayer
-    };
+    exports.ToolLayer = Tool;
 
 });
