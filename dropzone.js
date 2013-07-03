@@ -14,6 +14,10 @@ define(['cocos2d'], function (cc) {
         isPointInside:function (point) {
             var bBox = this.getBoundingBox();
             return cc.Rect.CCRectContainsPoint(bBox, point);
+        },
+
+        findPositionFor: function (draggable) {
+            
         }
 
     });

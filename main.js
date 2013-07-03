@@ -14,6 +14,7 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], f
     var Tool = ToolLayer.extend({
 
         init: function () {
+            var self = this;
 
             this._super();
 
@@ -42,8 +43,13 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], f
             var dg = new Draggable();
             dg.initWithFile(s_add_pin_button);
             dg.setPosition(size.width / 2, size.height / 2);
-            dg.onMoved(function (position) {
-                console.log(dz.isPointInside(position));
+            dg.onMoved(function (position, draggable) {
+                var dzs = self.getControls(DROPZONE_PREFIX);
+                _.each(dzs, function(dz) {
+                    if (dz.isPointInside(position)) {
+                        dz.findPositionFor(this);
+                    }
+                });
             });
             clc.addChild(dg);
             this.addChild(clc,0);
