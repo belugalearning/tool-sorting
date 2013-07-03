@@ -17,6 +17,7 @@ define(['cocos2d'], function (cc) {
             var label = new cc.LabelTTF();
             label.initWithString('');
             label.setOpacity(0);
+            label.setDimensions(sprite.getBoundingBox());
             this.initWithLabelAndBackgroundSprite(label, sprite);
         },
 
