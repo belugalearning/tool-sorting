@@ -1,9 +1,14 @@
 require.config({
-    paths: {}
+    paths: {
+        'dropzone': '../../tools/sorting/dropzone',
+        'draggable': '../../tools/sorting/draggable'
+    }
 });
 
-define(['exports', 'cocos2d', 'qlayer', 'toollayer'], function (exports, cc, QLayer, ToolLayer) {
+define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], function (exports, cc, QLayer, ToolLayer, DropZone, Draggable) {
     'use strict';
+
+    var DRAGGABLE_PREFIX = 'DRAGGABLE_';
 
     var Tool = ToolLayer.extend({
 
@@ -17,9 +22,23 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer'], function (exports, cc, QLa
 
             cc.Director.getInstance().setDisplayStats(false);
 
+            var clc = cc.Layer.create();
+            var dz = new DropZone();
+            dz.initWithFile(s_deep_water_background);
+            dz.setPosition(size.width / 2, size.height / 2);
+            clc.addChild(dz);
+            this.addChild(clc,0);
+
+            clc = cc.Layer.create();
+            var dg = new Draggable();
+            dg.initWithFile(s_add_pin_button);
+            dg.setPosition(size.width / 2, size.height / 2);
+            clc.addChild(dg);
+            this.addChild(clc,0);
+            this.registerControl(DRAGGABLE_PREFIX + 'one', dg);
+
             return this;
         },
-
 
         emptyFunction:function() {}
     });
