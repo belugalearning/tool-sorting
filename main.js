@@ -70,7 +70,13 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], f
             return this;
         },
 
-        noop: function() {}
+        getState: function () {
+            throw {name : "NotImplementedError", message : "This needs implementing"};
+        },
+
+        setQuestion: function (question) {
+            this._super();
+        }
     });
 
     ToolLayer.create = function () {
