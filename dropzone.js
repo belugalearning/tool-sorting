@@ -32,32 +32,31 @@ define(['cocos2d'], function (cc) {
         },
 
         isPointInsideArea: function (point) {
+            var self = this;
 
             var nCross = 0;
 
-            for (var i = 0; i < this.area.vertices.length; i++) {
-
-                var p1 = this.area.vertices[i];
+            _.each(this.area.vertices, function (p1, i) {
                 p1 = {
-                    x: p1.x + (this.getPosition().x - this.getBoundingBox().size.width * 0.5),
-                    y: p1.y + (this.getPosition().y - this.getBoundingBox().size.height * 0.5)
+                    x: p1.x + (self.getPosition().x - self.getBoundingBox().size.width * 0.5),
+                    y: p1.y + (self.getPosition().y - self.getBoundingBox().size.height * 0.5)
                 };
-                var p2 = this.area.vertices[(i + 1) % this.area.vertices.length];
+                var p2 = self.area.vertices[(i + 1) % self.area.vertices.length];
                 p2 = {
-                    x: p2.x + (this.getPosition().x - this.getBoundingBox().size.width * 0.5),
-                    y: p2.y + (this.getPosition().y - this.getBoundingBox().size.height * 0.5)
+                    x: p2.x + (self.getPosition().x - self.getBoundingBox().size.width * 0.5),
+                    y: p2.y + (self.getPosition().y - self.getBoundingBox().size.height * 0.5)
                 };
 
                 if (p1.y == p2.y) {
-                    continue;
+                    return;
                 }
 
                 if (point.y < Math.min(p1.y, p2.y)) {
-                    continue;
+                    return;
                 }
 
                 if (point.y >= Math.max(p1.y, p2.y)) {
-                    continue;
+                    return;
                 }
 
                 var x = (point.y - p1.y) * (p2.x - p1.x) / (p2.y - p1.y) + p1.x;
@@ -65,7 +64,7 @@ define(['cocos2d'], function (cc) {
                 if (x > point.x) {
                     nCross++;
                 }
-            }
+            });
 
             if (nCross % 2 == 1) {
                 return true;
