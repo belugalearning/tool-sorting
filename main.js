@@ -11,7 +11,15 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], f
     var DRAGGABLE_PREFIX = 'DRAGGABLE_';
     var DROPZONE_PREFIX = 'DROPZONE_';
 
+    var BACKGROUND_Z = 0;
+    var DROPZONE_Z = 1;
+    var DRAGGABLE_Z = 2;
+
     var Tool = ToolLayer.extend({
+
+        _windowSize: undefined,
+        _background: undefined,
+        _backgroundLayer: undefined,
 
         init: function () {
             var self = this;
@@ -20,30 +28,42 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], f
 
             this.setTouchEnabled(true);
 
-            var size = cc.Director.getInstance().getWinSize();
+            this._windowSize = cc.Director.getInstance().getWinSize();
 
             cc.Director.getInstance().setDisplayStats(false);
 
+            this.setBackground(s_deep_water_background);
+
+            this.addDropZone(300, 100, [{x:10, y:10}, {x:10, y:150}, {x:420, y:150}, {x:420, y:10}], s_digital_background);
+            this.addDropZone(300, 500, [{x:10, y:10}, {x:10, y:150}, {x:420, y:150}, {x:420, y:10}], s_digital_background);
+
+            this.addDraggable(s_add_pin_button);
+
+            return this;
+        },
+
+        setBackground: function (resource) {
+            var hasBg = true;
+            if (_.isUndefined(this._background)) {
+                this._backgroundLayer = cc.Layer.create();
+                this._background = new cc.Sprite();
+                hasBg = false;
+            }
+            this._background.initWithFile(resource);
+            this._background.setPosition(this._windowSize.width/2, this._windowSize.height/2);
+            this._backgroundLayer.addChild(this._background);
+            if (!hasBg) {
+                this.addChild(this._backgroundLayer, BACKGROUND_Z);
+            }
+        },
+
+        _draggableCounter: 0,
+        addDraggable: function (resource) {
+            var self = this; 
             var clc = cc.Layer.create();
-            var background = new cc.Sprite();
-            background.initWithFile(s_deep_water_background);
-            background.setPosition(size.width/2, size.height/2);
-            clc.addChild(background);
-            this.addChild(clc,0);
-
-            clc = cc.Layer.create();
-            var dz = new DropZone();
-            dz.initWithFile(s_digital_background);
-            dz.setPosition(size.width / 2, size.height / 2);
-            dz.setPoints([{x:10, y:10}, {x:100, y:100}, {x:200, y:100}, {x:150, y:50}]);
-            clc.addChild(dz);
-            this.registerControl(DROPZONE_PREFIX + 'one', dz);
-            this.addChild(clc,0);
-
-            clc = cc.Layer.create();
             var dg = new Draggable();
-            dg.initWithFile(s_add_pin_button);
-            dg.setPosition(size.width / 2, size.height / 2);
+            dg.initWithFile(resource);
+            dg.setPosition(this._windowSize.width / 2, this._windowSize.height / 2);
             dg.onMoved(function (position, draggable) {
                 var dzs = self.getControls(DROPZONE_PREFIX);
                 _.each(dzs, function(dz) {
@@ -63,11 +83,26 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], f
                 });
             });
             clc.addChild(dg);
-            this.addChild(clc,0);
-            this.registerControl(DRAGGABLE_PREFIX + 'one', dg);
-            clc = cc.Layer.create();
+            this.addChild(clc, DRAGGABLE_Z);
+            this.registerControl(DRAGGABLE_PREFIX + this._draggableCounter, dg);
+            this._draggableCounter++;
+        },
 
-            return this;
+        _dropzoneCounter: 0,
+        addDropZone: function (x, y, points, bgResource) {
+            var clc = cc.Layer.create();
+            var dz = new DropZone();
+            if (_.isUndefined(bgResource)) {
+                dz.init();
+            } else {
+                dz.initWithFile(bgResource);
+            }
+            dz.setPosition(x, y);
+            dz.setPoints(points);
+            clc.addChild(dz);
+            this.registerControl(DROPZONE_PREFIX + this._dropzoneCounter, dz);
+            this.addChild(clc, DROPZONE_Z);
+            this._dropzoneCounter++;
         },
 
         getState: function () {
