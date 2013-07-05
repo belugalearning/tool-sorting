@@ -34,8 +34,8 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], f
 
             this.setBackground(s_deep_water_background);
 
-            this.addDropZone(300, 100, [{x:10, y:10}, {x:10, y:150}, {x:420, y:150}, {x:420, y:10}], s_digital_background);
-            this.addDropZone(300, 500, [{x:10, y:10}, {x:10, y:150}, {x:420, y:150}, {x:420, y:10}], s_digital_background);
+            this.addDropZone({x:300, y:100}, [{x:10, y:10}, {x:10, y:150}, {x:420, y:150}, {x:420, y:10}], s_digital_background);
+            this.addDropZone({x:300, y:500}, [{x:10, y:10}, {x:10, y:150}, {x:420, y:150}, {x:420, y:10}], s_digital_background);
 
             this.addDraggable(s_add_pin_button);
 
@@ -89,7 +89,7 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], f
         },
 
         _dropzoneCounter: 0,
-        addDropZone: function (x, y, points, bgResource) {
+        addDropZone: function (position, points, bgResource) {
             var clc = cc.Layer.create();
             var dz = new DropZone();
             if (_.isUndefined(bgResource)) {
@@ -97,7 +97,7 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], f
             } else {
                 dz.initWithFile(bgResource);
             }
-            dz.setPosition(x, y);
+            dz.setPosition(position.x, position.y);
             dz.setPoints(points);
             clc.addChild(dz);
             this.registerControl(DROPZONE_PREFIX + this._dropzoneCounter, dz);
