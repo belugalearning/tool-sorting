@@ -7,6 +7,8 @@ define(['cocos2d'], function (cc) {
 
     var Draggable = cc.ControlButton.extend({
 
+        tag: '',
+
         ctor:function() {
             this._super();
         },
@@ -24,12 +26,12 @@ define(['cocos2d'], function (cc) {
         onTouchMoved: function (touch, event) {
             this._super(touch, event);
             this.setPosition(touch.getLocation());
-            this._onMoved.call(this, touch.getLocation());
+            this._onMoved.apply(this, [touch.getLocation(), this]);
         },
 
         onTouchEnded: function (touch, event) {
             this._super(touch, event);
-            this._onMoveEnded.call(this, touch.getLocation());
+            this._onMoveEnded.apply(this, [touch.getLocation(), this]);
         },
 
         _onMoved: function () {},

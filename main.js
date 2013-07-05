@@ -1,11 +1,12 @@
 require.config({
     paths: {
         'dropzone': '../../tools/sorting/dropzone',
-        'draggable': '../../tools/sorting/draggable'
+        'draggable': '../../tools/sorting/draggable',
+        'draggableLayer': '../../tools/sorting/draggableLayer'
     }
 });
 
-define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], function (exports, cc, QLayer, ToolLayer, DropZone, Draggable) {
+define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable', 'draggableLayer'], function (exports, cc, QLayer, ToolLayer, DropZone, Draggable, DraggableLayer) {
     'use strict';
 
     var DRAGGABLE_PREFIX = 'DRAGGABLE_';
@@ -38,36 +39,42 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], f
             this.addDropZone({x:300, y:500}, [{x:10, y:10}, {x:10, y:150}, {x:420, y:150}, {x:420, y:10}], bl.resources['images_sorting_sorting_box']);
 
             for (var i = 10 - 1; i >= 0; i--) {
-                this.addDraggable(bl.resources['images_sorting_cards_lion_card']);
+                this.addDraggable({x:100, y:100}, bl.resources['images_sorting_cards_lion_card']);
             }
 
             return this;
         },
 
         setBackground: function (resource) {
-            var hasBg = true;
             if (_.isUndefined(this._background)) {
                 this._backgroundLayer = cc.Layer.create();
+                this.addChild(this._backgroundLayer, BACKGROUND_Z);
                 this._background = new cc.Sprite();
-                hasBg = false;
             }
             this._background.initWithFile(resource);
             this._background.setPosition(this._windowSize.width/2, this._windowSize.height/2);
             this._backgroundLayer.addChild(this._background);
-            if (!hasBg) {
-                this.addChild(this._backgroundLayer, BACKGROUND_Z);
-            }
         },
 
         _draggableCounter: 0,
-        addDraggable: function (resource) {
-            var self = this; 
-            var clc = cc.Layer.create();
+        _draggableLayer: undefined,
+        _prevDraggable: undefined,
+        addDraggable: function (position, resource) {
+            var self = this;
+            if (_.isUndefined(this._draggableLayer)) {
+                console.log(DraggableLayer);
+                this._draggableLayer = DraggableLayer.create();
+                this.addChild(this._draggableLayer, DRAGGABLE_Z);
+            }
             var dg = new Draggable();
+            dg.tag = 'dg-' + this._draggableCounter;
             dg.initWithFile(resource);
-            dg.setPosition(this._windowSize.width / 2, this._windowSize.height / 2);
+            dg.setPosition(position.x, position.y);
             dg.onMoved(function (position, draggable) {
                 var dzs = self.getControls(DROPZONE_PREFIX);
+                self._draggableLayer.reorderChild(draggable, self._draggableCounter);
+                self._draggableLayer.sortAllChildren();
+                self._draggableLayer.reshuffleTouchHandlers();
                 _.each(dzs, function(dz) {
                     if (dz.isPointInsideArea(position)) {
                         dz.showArea();
@@ -75,6 +82,10 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], f
                         dz.hideArea();
                     }
                 });
+                if (self._prevDraggable !== draggable.tag) {
+                    self._draggableCounter++;
+                }
+                self._prevDraggable = draggable.tag;
             });
             dg.onMoveEnded(function (position, draggable) {
                 var dzs = self.getControls(DROPZONE_PREFIX);
@@ -84,8 +95,7 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable'], f
                     }
                 });
             });
-            clc.addChild(dg);
-            this.addChild(clc, DRAGGABLE_Z);
+            this._draggableLayer.addChild(dg);
             this.registerControl(DRAGGABLE_PREFIX + this._draggableCounter, dg);
             this._draggableCounter++;
         },
