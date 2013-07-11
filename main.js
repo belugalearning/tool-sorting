@@ -62,7 +62,6 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable', 'd
         addDraggable: function (position, resource) {
             var self = this;
             if (_.isUndefined(this._draggableLayer)) {
-                console.log(DraggableLayer);
                 this._draggableLayer = DraggableLayer.create();
                 this.addChild(this._draggableLayer, DRAGGABLE_Z);
             }
