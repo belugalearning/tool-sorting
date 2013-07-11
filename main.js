@@ -16,6 +16,7 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable', 'd
     var DROPZONE_Z = 1;
     var DRAGGABLE_Z = 2;
 
+    window.toolTag = 'sorting';
     var Tool = ToolLayer.extend({
 
         _windowSize: undefined,
@@ -33,13 +34,13 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable', 'd
 
             cc.Director.getInstance().setDisplayStats(false);
 
-            this.setBackground(bl.resources['images_sand_background']);
+            this.setBackground(window.bl.getResource('sand_background'));
 
-            this.addDropZone({x:300, y:100}, [{x:10, y:10}, {x:10, y:150}, {x:420, y:150}, {x:420, y:10}], bl.resources['images_sorting_sorting_box']);
-            this.addDropZone({x:300, y:500}, [{x:10, y:10}, {x:10, y:150}, {x:420, y:150}, {x:420, y:10}], bl.resources['images_sorting_sorting_box']);
+            this.addDropZone({x:300, y:100}, [{x:10, y:10}, {x:10, y:150}, {x:420, y:150}, {x:420, y:10}], window.bl.getResource('sorting_box'));
+            this.addDropZone({x:300, y:500}, [{x:10, y:10}, {x:10, y:150}, {x:420, y:150}, {x:420, y:10}], window.bl.getResource('sorting_box'));
 
             for (var i = 10 - 1; i >= 0; i--) {
-                this.addDraggable({x:100, y:100}, bl.resources['images_sorting_cards_lion_card']);
+                this.addDraggable({x:100, y:100}, window.bl.getResource('cards_lion_card'));
             }
 
             return this;
