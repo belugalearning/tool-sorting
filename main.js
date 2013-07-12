@@ -34,13 +34,22 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable', 'd
 
             cc.Director.getInstance().setDisplayStats(false);
 
-            this.setBackground(window.bl.getResource('sand_background'));
+            this.setBackground(window.bl.getResource('barchart_base'));
 
-            this.addDropZone({x:300, y:100}, [{x:10, y:10}, {x:10, y:150}, {x:420, y:150}, {x:420, y:10}], window.bl.getResource('sorting_box'));
-            this.addDropZone({x:300, y:500}, [{x:10, y:10}, {x:10, y:150}, {x:420, y:150}, {x:420, y:10}], window.bl.getResource('sorting_box'));
-
+            
+            for (var i = 4; i >= 0; i--) {
+                this.addDropZone({x:140 + (i * 155), y:145}, [{x:0, y:0}, {x:0, y:600}, {x:120, y:600}, {x:120, y:0}]);
+            };
             for (var i = 10 - 1; i >= 0; i--) {
-                this.addDraggable({x:100, y:100}, window.bl.getResource('cards_lion_card'));
+                var card = 'cards_lion_card';
+                if (i % 3 === 1) {
+                    card = 'cards_scorpion_card';
+                } else if (i % 5 === 1) {
+                    card = 'cards_giraffe_card';
+                } else if (i % 4 === 1) {
+                    card = 'cards_pig_card';
+                }
+                this.addDraggable({x:510, y:60}, window.bl.getResource(card));
             }
 
             return this;
