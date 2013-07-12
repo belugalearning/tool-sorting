@@ -16,11 +16,13 @@ define(['cocos2d'], function (cc) {
         initWithFile: function (file) {
             var sprite = new cc.Sprite();
             sprite.initWithFile(file);
+            var s = sprite.getBoundingBox().size;
             var label = new cc.LabelTTF();
             label.initWithString('');
             label.setOpacity(0);
-            label.setDimensions(sprite.getBoundingBox());
+            label.setDimensions(s);
             this.initWithLabelAndBackgroundSprite(label, sprite);
+            this.setMargins(0, 0);
         },
 
         onTouchMoved: function (touch, event) {
