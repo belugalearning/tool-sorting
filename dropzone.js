@@ -81,7 +81,7 @@ define(['cocos2d'], function (cc) {
         },
 
         findPositionFor: function (draggable) {
-
+            draggable.setPositionX(this.getPositionX() + 60); //+ this.getBoundingBox().size.width)
         }
 
     });

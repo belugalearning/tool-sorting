@@ -99,9 +99,10 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable', 'd
             dg.onMoveEnded(function (position, draggable) {
                 var dzs = self.getControls(DROPZONE_PREFIX);
                 _.each(dzs, function(dz) {
-                    if (dz.isPointInside(position)) {
-                        dz.findPositionFor(this);
+                    if (dz.isPointInsideArea(position)) {
+                        dz.findPositionFor(draggable);
                     }
+                    dz.hideArea();
                 });
             });
             this._draggableLayer.addChild(dg);
