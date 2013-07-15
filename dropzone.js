@@ -8,6 +8,7 @@ define(['cocos2d'], function (cc) {
     var DropZone = cc.Sprite.extend({
 
         area: undefined,
+        _stackDraggables: false,
 
         ctor: function() {
             this._super();
@@ -78,6 +79,11 @@ define(['cocos2d'], function (cc) {
 
         findPositionFor: function (draggable) {
             // draggable.setPositionX(this.getPositionX() + 60);
+            if (this._stackDraggables) {
+                // set it's position
+                // rotate an angle
+                // update label count
+            }
         }
 
     });
