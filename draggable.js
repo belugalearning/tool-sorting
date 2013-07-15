@@ -26,7 +26,7 @@ define(['cocos2d'], function (cc) {
             this.setMargins(0, 0);
         },
 
-        returnToLastPostion: function () {
+        returnToLastPosition: function () {
             this.setPosition(this._lastPosition);
         },
 
