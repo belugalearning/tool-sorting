@@ -42,11 +42,13 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable', 'd
             };
             for (var i = 10 - 1; i >= 0; i--) {
                 var card = 'cards_lion_card';
-                if (i % 3 === 1) {
+                if (i % 7 === 1) {
                     card = 'cards_scorpion_card';
+                } else if (i % 4 === 1) {
+                    card = 'cards_rabbit_card';
                 } else if (i % 5 === 1) {
                     card = 'cards_giraffe_card';
-                } else if (i % 4 === 1) {
+                } else if (i % 3 === 1) {
                     card = 'cards_pig_card';
                 }
                 this.addDraggable({x:510, y:60}, window.bl.getResource(card));
