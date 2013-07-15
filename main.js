@@ -16,6 +16,9 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable', 'd
     var DROPZONE_Z = 1;
     var DRAGGABLE_Z = 2;
 
+    var BAR_CHART = 'BAR_CHART';
+    var VENN_DIAGRAM = 'VENN_DIAGRAM';
+
     window.toolTag = 'sorting';
     var Tool = ToolLayer.extend({
 
@@ -34,25 +37,7 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable', 'd
 
             cc.Director.getInstance().setDisplayStats(false);
 
-            this.setBackground(window.bl.getResource('barchart_base'));
-
-            
-            for (var i = 4; i >= 0; i--) {
-                this.addDropZone({x:140 + (i * 155), y:145}, [{x:0, y:0}, {x:0, y:600}, {x:120, y:600}, {x:120, y:0}]);
-            };
-            for (var i = 10 - 1; i >= 0; i--) {
-                var card = 'cards_lion_card';
-                if (i % 7 === 1) {
-                    card = 'cards_scorpion_card';
-                } else if (i % 4 === 1) {
-                    card = 'cards_rabbit_card';
-                } else if (i % 5 === 1) {
-                    card = 'cards_giraffe_card';
-                } else if (i % 3 === 1) {
-                    card = 'cards_pig_card';
-                }
-                this.addDraggable({x:510, y:60}, window.bl.getResource(card));
-            }
+            this.setQuestion({ type: VENN_DIAGRAM, toolConfig: {} });
 
             return this;
         },
@@ -100,12 +85,21 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable', 'd
             });
             dg.onMoveEnded(function (position, draggable) {
                 var dzs = self.getControls(DROPZONE_PREFIX);
+                var inclusive = [];
+                var exclusive = [];
                 _.each(dzs, function(dz) {
                     if (dz.isPointInsideArea(position)) {
                         dz.findPositionFor(draggable);
+                        inclusive.push(dz);
+                    } else {
+                        exclusive.push(dz);
                     }
                     dz.hideArea();
                 });
+                // check to see if it's allowed in this position
+                // if (!bl.expression.valid(dg, inclusive, exclusive)) {
+                //     dg.returnToLastPosition();
+                // }
             });
             this._draggableLayer.addChild(dg);
             this.registerControl(DRAGGABLE_PREFIX + this._draggableCounter, dg);
@@ -134,7 +128,58 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable', 'd
         },
 
         setQuestion: function (question) {
-            this._super();
+            this._super(question);
+
+            if (question.type === BAR_CHART) {
+
+                this.setBackground(window.bl.getResource('barchart_base'));
+                
+                for (var i = 4; i >= 0; i--) {
+                    this.addDropZone({x:140 + (i * 155), y:145}, [{x:0, y:0}, {x:0, y:600}, {x:120, y:600}, {x:120, y:0}]);
+                }
+
+                for (var i = 10 - 1; i >= 0; i--) {
+                    var card = 'cards_lion_card';
+                    if (i % 7 === 1) {
+                        card = 'cards_scorpion_card';
+                    } else if (i % 4 === 1) {
+                        card = 'cards_rabbit_card';
+                    } else if (i % 5 === 1) {
+                        card = 'cards_giraffe_card';
+                    } else if (i % 3 === 1) {
+                        card = 'cards_pig_card';
+                    }
+                    this.addDraggable({x:510, y:60}, window.bl.getResource(card));
+                }
+
+            } else if (question.type === VENN_DIAGRAM) {
+
+                this.setBackground(window.bl.getResource('venn_base'));
+                
+                var pos = cc.p(205, 108);
+                this.addDropZone(pos, cc.DrawNode.generateCircle(pos, 175));
+
+                pos = cc.p(295, 108);
+                this.addDropZone(pos, cc.DrawNode.generateCircle(pos, 175));
+
+                pos = cc.p(250, 183);
+                this.addDropZone(pos, cc.DrawNode.generateCircle(pos, 175));
+                
+
+                for (var i = 10 - 1; i >= 0; i--) {
+                    var card = 'cards_lion_card';
+                    if (i % 7 === 1) {
+                        card = 'cards_scorpion_card';
+                    } else if (i % 4 === 1) {
+                        card = 'cards_rabbit_card';
+                    } else if (i % 5 === 1) {
+                        card = 'cards_giraffe_card';
+                    } else if (i % 3 === 1) {
+                        card = 'cards_pig_card';
+                    }
+                    this.addDraggable({x:510, y:60}, window.bl.getResource(card));
+                }
+            }
         }
     });
 
