@@ -18,12 +18,8 @@ define(['cocos2d'], function (cc) {
         },
 
         setPoints: function (points) {
-            var vertices = [];
-            _.each(points, function (point) {
-                vertices.push(point);
-            });
-            this.area.vertices = vertices;
-            this.area.drawPoly(vertices, cc.c4f(255, 0, 0, 0.2), 1, cc.c4f(255,0,0,0.2));
+            this.area.vertices = points;
+            this.area.drawPoly(points, cc.c4f(255, 0, 0, 0.2), 1, cc.c4f(255,0,0,0.2));
         },
 
         isPointInside: function (point) {
