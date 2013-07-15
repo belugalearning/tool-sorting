@@ -26,7 +26,7 @@ define(['cocos2d'], function (cc) {
             this.area.drawPoly(vertices, cc.c4f(255, 0, 0, 0.2), 1, cc.c4f(255,0,0,0.2));
         },
 
-        isPointInside:function (point) {
+        isPointInside: function (point) {
             var bBox = this.getBoundingBox();
             return cc.Rect.CCRectContainsPoint(bBox, point);
         },
@@ -81,7 +81,7 @@ define(['cocos2d'], function (cc) {
         },
 
         findPositionFor: function (draggable) {
-            draggable.setPositionX(this.getPositionX() + 60); //+ this.getBoundingBox().size.width)
+            // draggable.setPositionX(this.getPositionX() + 60);
         }
 
     });
