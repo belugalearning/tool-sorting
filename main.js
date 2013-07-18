@@ -71,8 +71,11 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable', 'd
                 self._draggableLayer.reorderChild(draggable, self._draggableCounter);
                 self._draggableLayer.sortAllChildren();
                 self._draggableLayer.reshuffleTouchHandlers();
+
                 _.each(dzs, function(dz) {
-                    if (dz.isPointInsideArea(position)) {
+                    // todo check center point of draggable, not touch point
+                    //
+                    if (dz.isPointInside(position)) {
                         dz.showArea();
                     } else {
                         dz.hideArea();
@@ -107,7 +110,7 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable', 'd
         },
 
         _dropzoneCounter: 0,
-        addDropZone: function (position, points, bgResource) {
+        addDropZone: function (position, shape, bgResource) {
             var clc = cc.Layer.create();
             var dz = new DropZone();
             if (_.isUndefined(bgResource)) {
@@ -116,7 +119,7 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable', 'd
                 dz.initWithFile(bgResource);
             }
             dz.setPosition(position.x, position.y);
-            dz.setPoints(points);
+            dz.setShape(shape);
             clc.addChild(dz);
             this.registerControl(DROPZONE_PREFIX + this._dropzoneCounter, dz);
             this.addChild(clc, DROPZONE_Z);
@@ -156,14 +159,14 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable', 'd
 
                 this.setBackground(window.bl.getResource('venn_base'));
                 
-                var pos = cc.p(205, 108);
-                this.addDropZone(pos, cc.DrawNode.generateCircle(pos, 175));
+                var pos = cc.p(233, 40);
+                this.addDropZone(pos, 175);
 
-                pos = cc.p(295, 108);
-                this.addDropZone(pos, cc.DrawNode.generateCircle(pos, 175));
+                pos = cc.p(416, 40);
+                this.addDropZone(pos, 175);
 
-                pos = cc.p(250, 183);
-                this.addDropZone(pos, cc.DrawNode.generateCircle(pos, 175));
+                pos = cc.p(325, 195);
+                this.addDropZone(pos, 175);
                 
 
                 for (var i = 10 - 1; i >= 0; i--) {

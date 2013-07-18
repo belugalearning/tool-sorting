@@ -2,29 +2,45 @@ require.config({
     paths: {}
 });
 
-define(['cocos2d'], function (cc) {
+define(['cocos2d', 'bldrawnode', 'underscore'], function (cc, BLDrawNode, _) {
     'use strict';
 
-    var DropZone = cc.Sprite.extend({
+    var DropZone = cc.Layer.extend({
 
         area: undefined,
         _stackDraggables: false,
 
         ctor: function() {
             this._super();
-            this.area = new cc.DrawNode();
+            this.area = new BLDrawNode();
             this.area.setZOrder(1);
             this.hideArea();
             this.addChild(this.area);
+
+            // Set the default anchor point
+            this.ignoreAnchorPointForPosition(false);
+            this.setAnchorPoint(cc.p(0.5, 0.5));
         },
 
-        setPoints: function (points) {
-            this.area.vertices = points;
-            this.area.drawPoly(points, cc.c4f(255, 0, 0, 0.2), 1, cc.c4f(255,0,0,0.2));
+        setShape: function (shape) {
+
+            if (_.isArray(shape)) {
+                this.area.vertices = shape;
+                this.area.drawPoly(shape, cc.c4f(255, 0, 0, 0.2), 1, cc.c4f(255,0,0,0.2));
+            } else {
+                this.setContentSize(cc.SizeMake(shape * 2, shape * 2));
+                this.area.drawCircle(cc.p(shape,shape), shape, 2 * Math.PI, 2, false, cc.c4f(1, 0, 0, 0.2), 1, cc.c4f(1,0,0,0.2));  
+            }
+
+            if (cc.SPRITE_DEBUG_DRAW > 0) {
+                var maxRect = this.area.getBoundingBoxToWorld();
+                this.area.drawPoly([cc.p(0,0), cc.p(0, maxRect.size.height), cc.p(maxRect.size.width, maxRect.size.height), cc.p(maxRect.size.width, 0)], cc.c4f(0, 1, 0, 0), 1, cc.c4f(0,1,0,0.2));
+            }
+
         },
 
         isPointInside: function (point) {
-            var bBox = this.getBoundingBox();
+            var bBox = this.area.getBoundingBoxToWorld();
             return cc.Rect.CCRectContainsPoint(bBox, point);
         },
 
