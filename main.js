@@ -6,7 +6,7 @@ require.config({
     }
 });
 
-define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable', 'draggableLayer'], function (exports, cc, QLayer, ToolLayer, DropZone, Draggable, DraggableLayer) {
+define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'dropzone', 'draggable', 'draggableLayer'], function (exports, cc, QLayer, Polygon, ToolLayer, DropZone, Draggable, DraggableLayer) {
     'use strict';
 
     var DRAGGABLE_PREFIX = 'DRAGGABLE_';
@@ -75,7 +75,7 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable', 'd
                 _.each(dzs, function(dz) {
                     // todo check center point of draggable, not touch point
                     //
-                    if (dz.isPointInside(position)) {
+                    if (dz.isPointInsideArea(position)) {
                         dz.showArea();
                     } else {
                         dz.hideArea();
@@ -131,6 +131,7 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable', 'd
         },
 
         setQuestion: function (question) {
+            var self = this;
             this._super(question);
 
             if (question.type === BAR_CHART) {
@@ -159,15 +160,29 @@ define(['exports', 'cocos2d', 'qlayer', 'toollayer', 'dropzone', 'draggable', 'd
 
                 this.setBackground(window.bl.getResource('venn_base'));
                 
-                var pos = cc.p(233, 40);
-                this.addDropZone(pos, 175);
 
-                pos = cc.p(416, 40);
-                this.addDropZone(pos, 175);
+                var path;
+                var pos;
 
-                pos = cc.p(325, 195);
-                this.addDropZone(pos, 175);
-                
+                var circles = [
+                    {
+                        r: 175,
+                        p: cc.p(233, 40)
+                    },
+                    {
+                        r: 175,
+                        p: cc.p(416, 40)
+                    },
+                    {
+                        r: 175,
+                        p: cc.p(325, 195)
+                    }
+                ];
+
+                _.each(circles, function (c) {
+                    var path = Polygon.fromCCPoints(cc.DrawNode.generateCircle(cc.p(c.r, c.r), c.r));
+                    self.addDropZone(c.p, Polygon.toCCPoints(path.points));
+                });
 
                 for (var i = 10 - 1; i >= 0; i--) {
                     var card = 'cards_lion_card';

@@ -23,18 +23,32 @@ define(['cocos2d', 'bldrawnode', 'underscore'], function (cc, BLDrawNode, _) {
         },
 
         setShape: function (shape) {
+            var width = 0;
+            var height = 0;
 
             if (_.isArray(shape)) {
                 this.area.vertices = shape;
+                var min = cc.p(999999,999999);
+                var max = cc.p(0,0);
+                _.map(shape, function (p) {
+                    min.x = Math.min(min.x, p.x);
+                    min.y = Math.min(min.y, p.y);
+                    max.x = Math.max(max.x, p.x);
+                    max.y = Math.max(max.y, p.y);
+                });
+                width = max.x - min.x;
+                height = max.y - min.y;
                 this.area.drawPoly(shape, cc.c4f(255, 0, 0, 0.2), 1, cc.c4f(255,0,0,0.2));
+
             } else {
                 this.setContentSize(cc.SizeMake(shape * 2, shape * 2));
+                width = shape * 2;
+                height = shape * 2;
                 this.area.drawCircle(cc.p(shape,shape), shape, 2 * Math.PI, 2, false, cc.c4f(1, 0, 0, 0.2), 1, cc.c4f(1,0,0,0.2));  
             }
 
             if (cc.SPRITE_DEBUG_DRAW > 0) {
-                var maxRect = this.area.getBoundingBoxToWorld();
-                this.area.drawPoly([cc.p(0,0), cc.p(0, maxRect.size.height), cc.p(maxRect.size.width, maxRect.size.height), cc.p(maxRect.size.width, 0)], cc.c4f(0, 1, 0, 0), 1, cc.c4f(0,1,0,0.2));
+                this.area.drawPoly([cc.p(0,0), cc.p(0, height), cc.p(width, height), cc.p(width, 0)], cc.c4f(0, 1, 0, 0), 1, cc.c4f(0,1,0,0.2));
             }
 
         },
@@ -51,13 +65,13 @@ define(['cocos2d', 'bldrawnode', 'underscore'], function (cc, BLDrawNode, _) {
 
             _.each(this.area.vertices, function (p1, i) {
                 p1 = {
-                    x: p1.x + (self.getPosition().x - self.getBoundingBox().size.width * 0.5),
-                    y: p1.y + (self.getPosition().y - self.getBoundingBox().size.height * 0.5)
+                    x: p1.x + (self.getPosition().x),
+                    y: p1.y + (self.getPosition().y)
                 };
                 var p2 = self.area.vertices[(i + 1) % self.area.vertices.length];
                 p2 = {
-                    x: p2.x + (self.getPosition().x - self.getBoundingBox().size.width * 0.5),
-                    y: p2.y + (self.getPosition().y - self.getBoundingBox().size.height * 0.5)
+                    x: p2.x + (self.getPosition().x),
+                    y: p2.y + (self.getPosition().y)
                 };
 
                 if (p1.y == p2.y) {
@@ -73,6 +87,7 @@ define(['cocos2d', 'bldrawnode', 'underscore'], function (cc, BLDrawNode, _) {
                 }
 
                 var x = (point.y - p1.y) * (p2.x - p1.x) / (p2.y - p1.y) + p1.x;
+
 
                 if (x > point.x) {
                     nCross++;
