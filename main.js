@@ -160,10 +160,6 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'dropzone', 
 
                 this.setBackground(window.bl.getResource('venn_base'));
                 
-
-                var path;
-                var pos;
-
                 var circles = [
                     {
                         r: 175,
