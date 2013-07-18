@@ -6,7 +6,7 @@ require.config({
     }
 });
 
-define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'dropzone', 'draggable', 'draggableLayer'], function (exports, cc, QLayer, Polygon, ToolLayer, DropZone, Draggable, DraggableLayer) {
+define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedsprite', 'dropzone', 'draggable', 'draggableLayer'], function (exports, cc, QLayer, Polygon, ToolLayer, StackedSprite, DropZone, Draggable, DraggableLayer) {
     'use strict';
 
     var DRAGGABLE_PREFIX = 'DRAGGABLE_';
@@ -17,7 +17,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'dropzone', 
     var DRAGGABLE_Z = 2;
 
     var BAR_CHART = 'BAR_CHART';
-    var VENN_DIAGRAM = 'VENN_DIAGRAM';
+    var VENN_DIAGRAM = 'venn';
 
     window.toolTag = 'sorting';
     var Tool = ToolLayer.extend({
@@ -37,7 +37,136 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'dropzone', 
 
             cc.Director.getInstance().setDisplayStats(false);
 
-            this.setQuestion({ type: VENN_DIAGRAM, toolConfig: {} });
+            this.setQuestion({
+                tool: "sorting",
+                mode: "venn",
+                autoreject: true,
+                symbols: {
+                    sets: {
+                        unclassified: {
+                            mathml: "\
+                                <csymbol definitionURL=%22local://symbols/creatures/creature0%22 />\
+                                <csymbol definitionURL=%22local://symbols/creatures/creature1%22 />\
+                                <csymbol definitionURL=%22local://symbols/creatures/creature2%22 />\
+                                <csymbol definitionURL=%22local://symbols/creatures/creature3%22 />"
+                        },
+                        set0: {
+                            mathml: "\
+                                <set>\
+                                    <bvar><ci>x</ci></bvar>\
+                                    <condition>\
+                                        <apply>\
+                                            <eq/>\
+                                                <apply>\
+                                                    <property/>\
+                                                    <ci>x</ci>\
+                                                    <key>colour</key>\
+                                                </apply>\
+                                                <string>e70000</string>\
+                                            </eq>\
+                                        </apply>\
+                                    </condition>\
+                                </set>",
+                            label: "Red"
+                        },
+                        set1: {
+                            mathml: "\
+                                <set>\
+                                    <bvar><ci>x</ci></bvar>\
+                                    <condition>\
+                                        <apply>\
+                                            <eq/>\
+                                                <apply>\
+                                                    <property/>\
+                                                    <ci>x</ci>\
+                                                    <key>legs</key>\
+                                                </apply>\
+                                                <cn>3</cn>\
+                                            </eq>\
+                                        </apply>\
+                                    </condition>\
+                                </set>",
+                            label: "3 Legs"
+                        },
+                        set2: {
+                            mathml: "\
+                                <set>\
+                                    <bvar><ci>x</ci></bvar>\
+                                    <condition>\
+                                        <apply>\
+                                            <eq/>\
+                                                <apply>\
+                                                    <property/>\
+                                                    <ci>x</ci>\
+                                                    <key>eyes</key>\
+                                                </apply>\
+                                                <cn>3</cn>\
+                                            </eq>\
+                                        </apply>\
+                                    </condition>\
+                                </set>",
+                            label: "3 Eyes"
+                        }
+                    },
+                    creatures: {
+                        creature0: {
+                            eyes: 3,
+                            legs: 3,
+                            colour: {
+                                r: 255,
+                                g: 0,
+                                b: 0,
+                                a: 255
+                            },
+                            horn: true,
+                        },
+                        creature1: {
+                            eyes: 2,
+                            legs: 2,
+                            colour: {
+                                r: 0,
+                                g: 255,
+                                b: 0,
+                                a: 255
+                            },
+                            horn: false,
+                        },
+                        creature2: {
+                            eyes: 3,
+                            legs: 4,
+                            colour: {
+                                r: 0,
+                                g: 255,
+                                b: 255,
+                                a: 255
+                            },
+                            horn: false,
+                        },
+                        creature3: {
+                            eyes: 1,
+                            legs: 3,
+                            colour: {
+                                r: 200,
+                                g: 255,
+                                b: 0,
+                                a: 255
+                            },
+                            horn: true,
+                        }
+                    }
+                },
+                state: "\
+                    <csymbol definitionURL=%22local://symbols/sets/unclassified%22 />\
+                    <csymbol definitionURL=%22local://symbols/sets/set0%22 />\
+                    <csymbol definitionURL=%22local://symbols/sets/set1%22 />\
+                    <csymbol definitionURL=%22local://symbols/sets/set2%22 />",
+                completionEvaluation: "\
+                    <apply>\
+                        <cardinality/>\
+                        <csymbol definitionURL=%22local://sets/unclassified%22/>\
+                        <cn>0</cn>\
+                    </apply>"
+            });
 
             return this;
         },
@@ -64,7 +193,11 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'dropzone', 
             }
             var dg = new Draggable();
             dg.tag = 'dg-' + this._draggableCounter;
-            dg.initWithFile(resource);
+            if (typeof resource === 'object') {
+                dg.initWithSprite(resource);
+            } else {
+                dg.initWithFile(resource);
+            }
             dg.setPosition(position.x, position.y);
             dg.onMoved(function (position, draggable) {
                 var dzs = self.getControls(DROPZONE_PREFIX);
@@ -130,6 +263,35 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'dropzone', 
             throw {name : "NotImplementedError", message : "This needs implementing"};
         },
 
+        checkValid: function () {
+
+            // POST:
+
+            // {
+            //     symbols: same as from question,
+            //     expression: construct the following
+            //         <apply>
+            //           <and/>
+            //           <apply>
+            //             <in/>
+            //             <csymbol definitionURL="local://symbols/creatures/creature0" />
+            //             <csymbol definitionURL="local://symbols/sets/set0" />
+            //           </apply>
+            //           <apply>
+            //             <notin/>
+            //             <csymbol definitionURL="local://symbols/creatures/creature0" />
+            //             <csymbol definitionURL="local://symbols/sets/set1" />
+            //           </apply>
+            //           <apply>
+            //             <notin/>
+            //             <csymbol definitionURL="local://symbols/creatures/creature0" />
+            //             <csymbol definitionURL="local://symbols/sets/set2" />
+            //           </apply>
+            //         </apply>
+            // }
+
+        },
+
         setQuestion: function (question) {
             var self = this;
             this._super(question);
@@ -163,15 +325,18 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'dropzone', 
                 var circles = [
                     {
                         r: 175,
-                        p: cc.p(245, 110)
+                        p: cc.p(245, 110),
+                        label: question.symbols.sets.set0.label
                     },
                     {
                         r: 175,
-                        p: cc.p(428, 110)
+                        p: cc.p(428, 110),
+                        label: question.symbols.sets.set1.label
                     },
                     {
                         r: 175,
-                        p: cc.p(335, 265)
+                        p: cc.p(335, 265),
+                        label: question.symbols.sets.set2.label
                     }
                 ];
 
@@ -207,20 +372,52 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'dropzone', 
 
                 });
 
-
-                for (var i = 10 - 1; i >= 0; i--) {
-                    var card = 'cards_lion_card';
-                    if (i % 7 === 1) {
-                        card = 'cards_scorpion_card';
-                    } else if (i % 4 === 1) {
-                        card = 'cards_rabbit_card';
-                    } else if (i % 5 === 1) {
-                        card = 'cards_giraffe_card';
-                    } else if (i % 3 === 1) {
-                        card = 'cards_pig_card';
+                _.each(question.symbols.creatures, function (creature, k) {
+                    var sprite = new StackedSprite();
+                    var layers = [
+                        {
+                            color: creature.colour,
+                            width: 60,
+                            height: 70,
+                            position: {
+                                x: 10,
+                                y: 10
+                            }
+                        },
+                        {
+                            filename: 'mask_legs_' + creature.legs,
+                            width: 86,
+                            height: 83,
+                            position: {
+                                x: 42,
+                                y: 42
+                            }
+                        },
+                        {
+                            filename: 'eyes_' + creature.eyes,
+                            width: 86,
+                            height: 83,
+                            position: {
+                                x: 42,
+                                y: 42
+                            }
+                        }
+                    ];
+                    if (creature.horn) {
+                        layers.push({
+                            filename: 'horns',
+                            width: 86,
+                            height: 83,
+                            position: {
+                                x: 42,
+                                y: 42
+                            }
+                        })
                     }
-                    this.addDraggable({x:510, y:60}, window.bl.getResource(card));
-                }
+                    sprite.setup({ layers: layers });
+                    self.addDraggable({x:510, y:60}, sprite);
+                });
+
             }
         }
     });

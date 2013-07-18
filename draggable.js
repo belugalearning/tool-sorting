@@ -26,6 +26,16 @@ define(['cocos2d'], function (cc) {
             this.setMargins(0, 0);
         },
 
+        initWithSprite: function (sprite) {
+            var s = sprite.getBoundingBox().size;
+            var label = new cc.LabelTTF();
+            label.initWithString('');
+            label.setOpacity(0);
+            label.setDimensions(s);
+            this.initWithLabelAndBackgroundSprite(label, sprite);
+            this.setMargins(0, 0);
+        },
+
         returnToLastPosition: function () {
             this.setPosition(this._lastPosition);
         },
