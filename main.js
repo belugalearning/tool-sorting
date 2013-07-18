@@ -134,7 +134,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'dropzone', 
             var self = this;
             this._super(question);
 
-            if (question.type === BAR_CHART) {
+            if (question.mode === BAR_CHART) {
 
                 this.setBackground(window.bl.getResource('barchart_base'));
                 
@@ -156,29 +156,57 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'dropzone', 
                     this.addDraggable({x:510, y:60}, window.bl.getResource(card));
                 }
 
-            } else if (question.type === VENN_DIAGRAM) {
+            } else if (question.mode === VENN_DIAGRAM) {
 
                 this.setBackground(window.bl.getResource('venn_base'));
                 
                 var circles = [
                     {
                         r: 175,
-                        p: cc.p(233, 40)
+                        p: cc.p(245, 110)
                     },
                     {
                         r: 175,
-                        p: cc.p(416, 40)
+                        p: cc.p(428, 110)
                     },
                     {
                         r: 175,
-                        p: cc.p(325, 195)
+                        p: cc.p(335, 265)
                     }
                 ];
 
-                _.each(circles, function (c) {
-                    var path = Polygon.fromCCPoints(cc.DrawNode.generateCircle(cc.p(c.r, c.r), c.r));
-                    self.addDropZone(c.p, Polygon.toCCPoints(path.points));
+                _.each(circles, function (c1, i) {
+                    var path1 = cc.DrawNode.generateCircle(cc.p(c1.r, c1.r), c1.r);
+                    path1 = _.map(path1, function(p) {
+                        return cc.p(p.x + c1.p.x, p.y + c1.p.y);
+                    });
+                    path1 = Polygon.fromCCPoints(path1);
+
+                    // this is the start of working out all the segments
+                    // _.each(circles, function (c2, j) {
+                    //     if (i !== j) {
+
+                    //         var path2 = cc.DrawNode.generateCircle(cc.p(c2.r, c2.r), c2.r);
+                    //         // offset this path based on it's position
+                    //         path2 = _.map(path2, function(p) {
+                    //             return cc.p(p.x + c2.p.x, p.y + c2.p.y);
+                    //         });
+                    //         path2 = Polygon.fromCCPoints(path2);
+
+                    //         path1 = path2.clip(path1, 'difference')[0];
+
+                    //     }
+
+                    // });
+
+                    var path = Polygon.toCCPoints(path1.points);
+                    path = _.map(path, function (p) {
+                        return cc.p(p.x - c1.p.x, p.y - c1.p.y);
+                    });
+                    self.addDropZone(c1.p, path);
+
                 });
+
 
                 for (var i = 10 - 1; i >= 0; i--) {
                     var card = 'cards_lion_card';
