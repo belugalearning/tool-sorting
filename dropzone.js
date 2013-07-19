@@ -39,7 +39,7 @@ define(['cocos2d', 'bldrawnode', 'underscore'], function (cc, BLDrawNode, _) {
                 width = max.x - min.x;
                 height = max.y - min.y;
                 this.area.drawPoly(shape, cc.c4f(255, 0, 0, 0.2), 1, cc.c4f(255,0,0,0.2));
-
+                this.setContentSize(cc.SizeMake(width, height));
             } else {
                 this.setContentSize(cc.SizeMake(shape * 2, shape * 2));
                 width = shape * 2;
@@ -51,6 +51,15 @@ define(['cocos2d', 'bldrawnode', 'underscore'], function (cc, BLDrawNode, _) {
                 this.area.drawPoly([cc.p(0,0), cc.p(0, height), cc.p(width, height), cc.p(width, 0)], cc.c4f(0, 1, 0, 0), 1, cc.c4f(0,1,0,0.2));
             }
 
+        },
+
+        _label: undefined,
+        setLabel: function (text) {
+            if (_.isUndefined(this._label)) {
+                this._label = cc.LabelTTF.create(text, "Arial", 30);
+                this.addChild(this._label);  
+            }
+            this._label.setPosition(cc.p(this.getContentSize().width / 2, this.getContentSize().height / 2));
         },
 
         isPointInside: function (point) {

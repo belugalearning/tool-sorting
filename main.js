@@ -51,6 +51,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                                 <csymbol definitionURL=%22local://symbols/creatures/creature3%22 />"
                         },
                         set0: {
+                            definitionURL: "local://symbols/sets/set0",
                             mathml: "\
                                 <set>\
                                     <bvar><ci>x</ci></bvar>\
@@ -70,6 +71,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                             label: "Red"
                         },
                         set1: {
+                            definitionURL: "local://symbols/sets/set1",
                             mathml: "\
                                 <set>\
                                     <bvar><ci>x</ci></bvar>\
@@ -89,6 +91,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                             label: "3 Legs"
                         },
                         set2: {
+                            definitionURL: "local://symbols/sets/set2",
                             mathml: "\
                                 <set>\
                                     <bvar><ci>x</ci></bvar>\
@@ -110,10 +113,11 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                     },
                     creatures: {
                         creature0: {
+                            definitionURL: "local://symbols/creatures/creature0",
                             eyes: 3,
                             legs: 3,
                             colour: {
-                                r: 255,
+                                r: 231,
                                 g: 0,
                                 b: 0,
                                 a: 255
@@ -121,34 +125,37 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                             horn: true,
                         },
                         creature1: {
+                            definitionURL: "local://symbols/creatures/creature1",
                             eyes: 2,
                             legs: 2,
                             colour: {
-                                r: 0,
-                                g: 255,
+                                r: 247,
+                                g: 204,
                                 b: 0,
                                 a: 255
                             },
                             horn: false,
                         },
                         creature2: {
+                            definitionURL: "local://symbols/creatures/creature2",
                             eyes: 3,
                             legs: 4,
                             colour: {
                                 r: 0,
-                                g: 255,
-                                b: 255,
+                                g: 170,
+                                b: 234,
                                 a: 255
                             },
                             horn: false,
                         },
                         creature3: {
+                            definitionURL: "local://symbols/creatures/creature3",
                             eyes: 1,
                             legs: 3,
                             colour: {
-                                r: 200,
-                                g: 255,
-                                b: 0,
+                                r: 115,
+                                g: 116,
+                                b: 172,
                                 a: 255
                             },
                             horn: true,
@@ -185,13 +192,14 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
         _draggableCounter: 0,
         _draggableLayer: undefined,
         _prevDraggable: undefined,
-        addDraggable: function (position, resource) {
+        addDraggable: function (position, resource, definitionURL) {
             var self = this;
             if (_.isUndefined(this._draggableLayer)) {
                 this._draggableLayer = DraggableLayer.create();
                 this.addChild(this._draggableLayer, DRAGGABLE_Z);
             }
             var dg = new Draggable();
+            dg.definitionURL = definitionURL;
             dg.tag = 'dg-' + this._draggableCounter;
             if (typeof resource === 'object') {
                 dg.initWithSprite(resource);
@@ -232,10 +240,9 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                     }
                     dz.hideArea();
                 });
-                // check to see if it's allowed in this position
-                // if (!bl.expression.valid(dg, inclusive, exclusive)) {
-                //     dg.returnToLastPosition();
-                // }
+                if (!self.checkValid(dg, inclusive, exclusive)) {
+                    dg.returnToLastPosition();
+                }
             });
             this._draggableLayer.addChild(dg);
             this.registerControl(DRAGGABLE_PREFIX + this._draggableCounter, dg);
@@ -243,9 +250,10 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
         },
 
         _dropzoneCounter: 0,
-        addDropZone: function (position, shape, bgResource) {
+        addDropZone: function (position, shape, label, definitionURL, bgResource) {
             var clc = cc.Layer.create();
             var dz = new DropZone();
+            dz.definitionURL = definitionURL;
             if (_.isUndefined(bgResource)) {
                 dz.init();
             } else {
@@ -253,6 +261,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
             }
             dz.setPosition(position.x, position.y);
             dz.setShape(shape);
+            dz.setLabel(label);
             clc.addChild(dz);
             this.registerControl(DROPZONE_PREFIX + this._dropzoneCounter, dz);
             this.addChild(clc, DROPZONE_Z);
@@ -263,7 +272,34 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
             throw {name : "NotImplementedError", message : "This needs implementing"};
         },
 
-        checkValid: function () {
+        checkValid: function (dg, inclusive, exclusive) {
+
+            var expression = ['<apply>'];
+
+            expression.push('<and />');
+
+            _.each(inclusive, function (dz) {
+                expression.push('<apply><in />');
+                expression.push('<csymbol definitionURL="' + dg.definitionURL + '" />');
+                expression.push('<csymbol definitionURL="' + dz.definitionURL + '" />');
+                expression.push('</apply>');
+            });
+
+            _.each(exclusive, function (dz) {
+                expression.push('<apply><notin />');
+                expression.push('<csymbol definitionURL="' + dg.definitionURL + '" />');
+                expression.push('<csymbol definitionURL="' + dz.definitionURL + '" />');
+                expression.push('</apply>');
+            });
+
+            expression.push('</apply>');
+
+            console.log({
+                symbols: this.question.symbols,
+                expression: expression.join('')
+            })
+
+            return false;
 
             // POST:
 
@@ -326,17 +362,20 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                     {
                         r: 175,
                         p: cc.p(245, 110),
-                        label: question.symbols.sets.set0.label
+                        label: question.symbols.sets.set0.label,
+                        definitionURL: question.symbols.sets.set0.definitionURL
                     },
                     {
                         r: 175,
                         p: cc.p(428, 110),
-                        label: question.symbols.sets.set1.label
+                        label: question.symbols.sets.set1.label,
+                        definitionURL: question.symbols.sets.set1.definitionURL
                     },
                     {
                         r: 175,
                         p: cc.p(335, 265),
-                        label: question.symbols.sets.set2.label
+                        label: question.symbols.sets.set2.label,
+                        definitionURL: question.symbols.sets.set2.definitionURL
                     }
                 ];
 
@@ -368,7 +407,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                     path = _.map(path, function (p) {
                         return cc.p(p.x - c1.p.x, p.y - c1.p.y);
                     });
-                    self.addDropZone(c1.p, path);
+                    self.addDropZone(c1.p, path, c1.label, c1.definitionURL);
 
                 });
 
@@ -415,7 +454,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                         })
                     }
                     sprite.setup({ layers: layers });
-                    self.addDraggable({x:510, y:60}, sprite);
+                    self.addDraggable({x:510, y:60}, sprite, creature.definitionURL);
                 });
 
             }
