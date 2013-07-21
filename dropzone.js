@@ -55,6 +55,7 @@ define(['cocos2d', 'bldrawnode', 'underscore'], function (cc, BLDrawNode, _) {
 
         _label: undefined,
         setLabel: function (text) {
+            text = text || '';
             if (_.isUndefined(this._label)) {
                 this._label = cc.LabelTTF.create(text, "Arial", 30);
                 this.addChild(this._label);  

@@ -18,6 +18,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
 
     var BAR_CHART = 'BAR_CHART';
     var VENN_DIAGRAM = 'venn';
+    var TABLE_DIAGRAM = 'table';
 
     window.toolTag = 'sorting';
     var Tool = ToolLayer.extend({
@@ -39,7 +40,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
 
             this.setQuestion({
               'tool': 'sorting',
-              'toolMode': 'venn',
+              'toolMode': 'table',
               'setCategory': 'creature',
               'numSets': 3,
               'autoreject': true,
@@ -804,6 +805,8 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
 
         checkValid: function (dg, inclusive, exclusive) {
 
+            if (inclusive.length + exclusive.length <= 0) return false;
+
             var expression = ['<apply>'];
 
             expression.push('<and />');
@@ -832,31 +835,16 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
 
             return Math.random() > 0.5;
 
-            // POST:
+        },
 
-            // {
-            //     symbols: same as from question,
-            //     expression: construct the following
-            //         <apply>
-            //           <and/>
-            //           <apply>
-            //             <in/>
-            //             <csymbol definitionURL="local://symbols/creatures/creature0" />
-            //             <csymbol definitionURL="local://symbols/sets/set0" />
-            //           </apply>
-            //           <apply>
-            //             <notin/>
-            //             <csymbol definitionURL="local://symbols/creatures/creature0" />
-            //             <csymbol definitionURL="local://symbols/sets/set1" />
-            //           </apply>
-            //           <apply>
-            //             <notin/>
-            //             <csymbol definitionURL="local://symbols/creatures/creature0" />
-            //             <csymbol definitionURL="local://symbols/sets/set2" />
-            //           </apply>
-            //         </apply>
-            // }
+        addSortables: function (question) {
+            var self = this;
+            _.each(question.symbols.set_members, function (creature, k) {
+                var sprite = new StackedSprite();
 
+                sprite.setup({ layers: creature.sprite });
+                self.addDraggable({x:510, y:60}, sprite, creature.definitionURL);
+            });
         },
 
         setQuestion: function (question) {
@@ -872,19 +860,22 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                     this.addDropZone({x:140 + (i * 155), y:145}, [{x:0, y:0}, {x:0, y:600}, {x:120, y:600}, {x:120, y:0}]);
                 }
 
-                for (var i = 10 - 1; i >= 0; i--) {
-                    var card = 'cards_lion_card';
-                    if (i % 7 === 1) {
-                        card = 'cards_scorpion_card';
-                    } else if (i % 4 === 1) {
-                        card = 'cards_rabbit_card';
-                    } else if (i % 5 === 1) {
-                        card = 'cards_giraffe_card';
-                    } else if (i % 3 === 1) {
-                        card = 'cards_pig_card';
-                    }
-                    this.addDraggable({x:510, y:60}, window.bl.getResource(card));
-                }
+            } else if (question.toolMode === TABLE_DIAGRAM) {
+
+                this.setBackground(window.bl.getResource('table_base'));
+                
+                var x_start = 370;
+                var y_start = 205;
+
+                var x_offset = 0;
+                var y_offset = 0;
+                this.addDropZone({x:x_start + x_offset, y:y_start + y_offset}, [{x:0, y:0}, {x:0, y:125}, {x:138, y:125}, {x:138, y:0}]);
+                x_offset += 145;
+                this.addDropZone({x:x_start + x_offset, y:y_start + y_offset}, [{x:0, y:0}, {x:0, y:125}, {x:138, y:125}, {x:138, y:0}]);
+                y_offset += 130;
+                this.addDropZone({x:x_start + x_offset, y:y_start + y_offset}, [{x:0, y:0}, {x:0, y:125}, {x:138, y:125}, {x:138, y:0}]);
+                x_offset -= 145;
+                this.addDropZone({x:x_start + x_offset, y:y_start + y_offset}, [{x:0, y:0}, {x:0, y:125}, {x:138, y:125}, {x:138, y:0}]);
 
             } else if (question.toolMode === VENN_DIAGRAM) {
 
@@ -942,15 +933,10 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                     self.addDropZone(c1.p, path, c1.label, c1.definitionURL);
 
                 });
-
-                _.each(question.symbols.set_members, function (creature, k) {
-                    var sprite = new StackedSprite();
-
-                    sprite.setup({ layers: creature.sprite });
-                    self.addDraggable({x:510, y:60}, sprite, creature.definitionURL);
-                });
-
             }
+
+            this.addSortables(question);
+
         }
     });
 
