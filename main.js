@@ -18,7 +18,6 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
 
     var BAR_CHART = 'BAR_CHART';
     var VENN_DIAGRAM = 'venn';
-    var TABLE_DIAGRAM = 'table';
 
     window.toolTag = 'sorting';
     var Tool = ToolLayer.extend({
@@ -38,674 +37,14 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
 
             cc.Director.getInstance().setDisplayStats(false);
 
-            this.setQuestion({
-              'tool': 'sorting',
-              'toolMode': 'table',
-              'setCategory': 'creature',
-              'numSets': 3,
-              'autoreject': true,
-              'symbols': {
-                'sets': {
-                  'set0': {
-                    'definitionURL': 'local://symbols/sets/set0',
-                    'mathml': '<set><bvar><ci>x</ci></bvar><condition><apply><eq/><apply><property/><ci>x</ci><key>legs</key></apply><string>4</string></eq></apply></condition></set>',
-                    'label': 'Has 4 legs',
-                    'negationLabel': 'Does not have 4 legs'
-                  },
-                  'set1': {
-                    'definitionURL': 'local://symbols/sets/set1',
-                    'mathml': '<set><bvar><ci>x</ci></bvar><condition><apply><eq/><apply><property/><ci>x</ci><key>eyes</key></apply><string>2</string></eq></apply></condition></set>',
-                    'label': 'Has 2eyes',
-                    'negationLabel': 'Does not have 2 eyes'
-                  },
-                  'set2': {
-                    'definitionURL': 'local://symbols/sets/set2',
-                    'mathml': '<set><bvar><ci>x</ci></bvar><condition><apply><eq/><apply><property/><ci>x</ci><key>horn</key></apply><string>false</string></eq></apply></condition></set>',
-                    'label': 'Does not have horns',
-                    'negationLabel': 'Has horns'
-                  }
-                },
-                'set_members': {
-                  'creature0': {
-                    'definitionURL': 'local://symbols/set_members/creature0',
-                    'eyes': 2,
-                    'legs': 4,
-                    'colour': 'yellow',
-                    'horn': false,
-                    'sprite': [
-                      {
-                        'color': {
-                          'r': 247,
-                          'g': 204,
-                          'b': 0,
-                          'a': 255
-                        },
-                        'width': 60,
-                        'height': 70,
-                        'position': {
-                          'x': 10,
-                          'y': 10
-                        }
-                      },
-                      {
-                        'filename': 'mask_legs_4',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'eyes_2',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      }
-                    ]
-                  },
-                  'creature1': {
-                    'definitionURL': 'local://symbols/set_members/creature1',
-                    'eyes': 2,
-                    'legs': 4,
-                    'colour': 'green',
-                    'horn': false,
-                    'sprite': [
-                      {
-                        'color': {
-                          'r': 0,
-                          'g': 183,
-                          'b': 0,
-                          'a': 255
-                        },
-                        'width': 60,
-                        'height': 70,
-                        'position': {
-                          'x': 10,
-                          'y': 10
-                        }
-                      },
-                      {
-                        'filename': 'mask_legs_4',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'eyes_2',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      }
-                    ]
-                  },
-                  'creature2': {
-                    'definitionURL': 'local://symbols/set_members/creature2',
-                    'eyes': 2,
-                    'legs': 4,
-                    'colour': 'red',
-                    'horn': true,
-                    'sprite': [
-                      {
-                        'color': {
-                          'r': 231,
-                          'g': 0,
-                          'b': 0,
-                          'a': 255
-                        },
-                        'width': 60,
-                        'height': 70,
-                        'position': {
-                          'x': 10,
-                          'y': 10
-                        }
-                      },
-                      {
-                        'filename': 'mask_legs_4',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'eyes_2',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'horns',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      }
-                    ]
-                  },
-                  'creature3': {
-                    'definitionURL': 'local://symbols/set_members/creature3',
-                    'eyes': 2,
-                    'legs': 4,
-                    'colour': 'blue',
-                    'horn': true,
-                    'sprite': [
-                      {
-                        'color': {
-                          'r': 0,
-                          'g': 170,
-                          'b': 234,
-                          'a': 255
-                        },
-                        'width': 60,
-                        'height': 70,
-                        'position': {
-                          'x': 10,
-                          'y': 10
-                        }
-                      },
-                      {
-                        'filename': 'mask_legs_4',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'eyes_2',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'horns',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      }
-                    ]
-                  },
-                  'creature4': {
-                    'definitionURL': 'local://symbols/set_members/creature4',
-                    'eyes': 3,
-                    'legs': 4,
-                    'colour': 'blue',
-                    'horn': false,
-                    'sprite': [
-                      {
-                        'color': {
-                          'r': 0,
-                          'g': 170,
-                          'b': 234,
-                          'a': 255
-                        },
-                        'width': 60,
-                        'height': 70,
-                        'position': {
-                          'x': 10,
-                          'y': 10
-                        }
-                      },
-                      {
-                        'filename': 'mask_legs_4',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'eyes_3',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      }
-                    ]
-                  },
-                  'creature5': {
-                    'definitionURL': 'local://symbols/set_members/creature5',
-                    'eyes': 3,
-                    'legs': 4,
-                    'colour': 'pink',
-                    'horn': false,
-                    'sprite': [
-                      {
-                        'color': {
-                          'r': 225,
-                          'g': 116,
-                          'b': 172,
-                          'a': 255
-                        },
-                        'width': 60,
-                        'height': 70,
-                        'position': {
-                          'x': 10,
-                          'y': 10
-                        }
-                      },
-                      {
-                        'filename': 'mask_legs_4',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'eyes_3',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      }
-                    ]
-                  },
-                  'creature6': {
-                    'definitionURL': 'local://symbols/set_members/creature6',
-                    'eyes': 3,
-                    'legs': 4,
-                    'colour': 'green',
-                    'horn': true,
-                    'sprite': [
-                      {
-                        'color': {
-                          'r': 0,
-                          'g': 183,
-                          'b': 0,
-                          'a': 255
-                        },
-                        'width': 60,
-                        'height': 70,
-                        'position': {
-                          'x': 10,
-                          'y': 10
-                        }
-                      },
-                      {
-                        'filename': 'mask_legs_4',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'eyes_3',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'horns',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      }
-                    ]
-                  },
-                  'creature7': {
-                    'definitionURL': 'local://symbols/set_members/creature7',
-                    'eyes': 1,
-                    'legs': 4,
-                    'colour': 'red',
-                    'horn': true,
-                    'sprite': [
-                      {
-                        'color': {
-                          'r': 231,
-                          'g': 0,
-                          'b': 0,
-                          'a': 255
-                        },
-                        'width': 60,
-                        'height': 70,
-                        'position': {
-                          'x': 10,
-                          'y': 10
-                        }
-                      },
-                      {
-                        'filename': 'mask_legs_4',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'eyes_1',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'horns',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      }
-                    ]
-                  },
-                  'creature8': {
-                    'definitionURL': 'local://symbols/set_members/creature8',
-                    'eyes': 2,
-                    'legs': 3,
-                    'colour': 'red',
-                    'horn': false,
-                    'sprite': [
-                      {
-                        'color': {
-                          'r': 231,
-                          'g': 0,
-                          'b': 0,
-                          'a': 255
-                        },
-                        'width': 60,
-                        'height': 70,
-                        'position': {
-                          'x': 10,
-                          'y': 10
-                        }
-                      },
-                      {
-                        'filename': 'mask_legs_3',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'eyes_2',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      }
-                    ]
-                  },
-                  'creature9': {
-                    'definitionURL': 'local://symbols/set_members/creature9',
-                    'eyes': 2,
-                    'legs': 2,
-                    'colour': 'yellow',
-                    'horn': false,
-                    'sprite': [
-                      {
-                        'color': {
-                          'r': 247,
-                          'g': 204,
-                          'b': 0,
-                          'a': 255
-                        },
-                        'width': 60,
-                        'height': 70,
-                        'position': {
-                          'x': 10,
-                          'y': 10
-                        }
-                      },
-                      {
-                        'filename': 'mask_legs_2',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'eyes_2',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      }
-                    ]
-                  },
-                  'creature10': {
-                    'definitionURL': 'local://symbols/set_members/creature10',
-                    'eyes': 2,
-                    'legs': 3,
-                    'colour': 'blue',
-                    'horn': true,
-                    'sprite': [
-                      {
-                        'color': {
-                          'r': 0,
-                          'g': 170,
-                          'b': 234,
-                          'a': 255
-                        },
-                        'width': 60,
-                        'height': 70,
-                        'position': {
-                          'x': 10,
-                          'y': 10
-                        }
-                      },
-                      {
-                        'filename': 'mask_legs_3',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'eyes_2',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'horns',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      }
-                    ]
-                  },
-                  'creature11': {
-                    'definitionURL': 'local://symbols/set_members/creature11',
-                    'eyes': 2,
-                    'legs': 2,
-                    'colour': 'green',
-                    'horn': true,
-                    'sprite': [
-                      {
-                        'color': {
-                          'r': 0,
-                          'g': 183,
-                          'b': 0,
-                          'a': 255
-                        },
-                        'width': 60,
-                        'height': 70,
-                        'position': {
-                          'x': 10,
-                          'y': 10
-                        }
-                      },
-                      {
-                        'filename': 'mask_legs_2',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'eyes_2',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'horns',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      }
-                    ]
-                  },
-                  'creature12': {
-                    'definitionURL': 'local://symbols/set_members/creature12',
-                    'eyes': 3,
-                    'legs': 3,
-                    'colour': 'red',
-                    'horn': false,
-                    'sprite': [
-                      {
-                        'color': {
-                          'r': 231,
-                          'g': 0,
-                          'b': 0,
-                          'a': 255
-                        },
-                        'width': 60,
-                        'height': 70,
-                        'position': {
-                          'x': 10,
-                          'y': 10
-                        }
-                      },
-                      {
-                        'filename': 'mask_legs_3',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'eyes_3',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      }
-                    ]
-                  },
-                  'creature13': {
-                    'definitionURL': 'local://symbols/set_members/creature13',
-                    'eyes': 1,
-                    'legs': 3,
-                    'colour': 'red',
-                    'horn': false,
-                    'sprite': [
-                      {
-                        'color': {
-                          'r': 231,
-                          'g': 0,
-                          'b': 0,
-                          'a': 255
-                        },
-                        'width': 60,
-                        'height': 70,
-                        'position': {
-                          'x': 10,
-                          'y': 10
-                        }
-                      },
-                      {
-                        'filename': 'mask_legs_3',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      },
-                      {
-                        'filename': 'eyes_1',
-                        'width': 86,
-                        'height': 83,
-                        'position': {
-                          'x': 42,
-                          'y': 42
-                        }
-                      }
-                    ]
-                  }
-                },
-                'lists': {
-                  'unclassified': {
-                    'definitionURL': 'local://symbols/lists/unclassified',
-                    'mathml': '<list><members><csymbol definitionURL="local://symbols/set_members/creature10" /><csymbol definitionURL="local://symbols/set_members/creature11" /><csymbol definitionURL="local://symbols/set_members/creature7" /><csymbol definitionURL="local://symbols/set_members/creature4" /><csymbol definitionURL="local://symbols/set_members/creature2" /><csymbol definitionURL="local://symbols/set_members/creature1" /><csymbol definitionURL="local://symbols/set_members/creature9" /><csymbol definitionURL="local://symbols/set_members/creature3" /><csymbol definitionURL="local://symbols/set_members/creature5" /><csymbol definitionURL="local://symbols/set_members/creature13" /><csymbol definitionURL="local://symbols/set_members/creature12" /><csymbol definitionURL="local://symbols/set_members/creature0" /><csymbol definitionURL="local://symbols/set_members/creature8" /><csymbol definitionURL="local://symbols/set_members/creature6" /></members></list>'
-                  }
-                }
-              },
-              'completionEvaluation': '<apply><cardinality/><csymbol definitionURL="local://sets/unclassified"/><cn>0</cn></apply>',
-              'state': '<state><csymbol definitionURL="local://symbols/lists/unclassified" /><csymbol definitionURL="local://symbols/sets/set0" /><csymbol definitionURL="local://symbols/sets/set1" /><csymbol definitionURL="local://symbols/sets/set2" /></state>'
-            });
-
+            this.setQuestion(
+              contentService.question({
+                tool:'sorting',
+                toolMode:'venn',
+                setCategory:'creature',
+                numSets:3
+              })
+            )
             return this;
         },
 
@@ -805,8 +144,6 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
 
         checkValid: function (dg, inclusive, exclusive) {
 
-            if (inclusive.length + exclusive.length <= 0) return false;
-
             var expression = ['<apply>'];
 
             expression.push('<and />');
@@ -835,16 +172,31 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
 
             return Math.random() > 0.5;
 
-        },
+            // POST:
 
-        addSortables: function (question) {
-            var self = this;
-            _.each(question.symbols.set_members, function (creature, k) {
-                var sprite = new StackedSprite();
+            // {
+            //     symbols: same as from question,
+            //     expression: construct the following
+            //         <apply>
+            //           <and/>
+            //           <apply>
+            //             <in/>
+            //             <csymbol definitionURL="local://symbols/creatures/creature0" />
+            //             <csymbol definitionURL="local://symbols/sets/set0" />
+            //           </apply>
+            //           <apply>
+            //             <notin/>
+            //             <csymbol definitionURL="local://symbols/creatures/creature0" />
+            //             <csymbol definitionURL="local://symbols/sets/set1" />
+            //           </apply>
+            //           <apply>
+            //             <notin/>
+            //             <csymbol definitionURL="local://symbols/creatures/creature0" />
+            //             <csymbol definitionURL="local://symbols/sets/set2" />
+            //           </apply>
+            //         </apply>
+            // }
 
-                sprite.setup({ layers: creature.sprite });
-                self.addDraggable({x:510, y:60}, sprite, creature.definitionURL);
-            });
         },
 
         setQuestion: function (question) {
@@ -860,22 +212,19 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                     this.addDropZone({x:140 + (i * 155), y:145}, [{x:0, y:0}, {x:0, y:600}, {x:120, y:600}, {x:120, y:0}]);
                 }
 
-            } else if (question.toolMode === TABLE_DIAGRAM) {
-
-                this.setBackground(window.bl.getResource('table_base'));
-                
-                var x_start = 370;
-                var y_start = 205;
-
-                var x_offset = 0;
-                var y_offset = 0;
-                this.addDropZone({x:x_start + x_offset, y:y_start + y_offset}, [{x:0, y:0}, {x:0, y:125}, {x:138, y:125}, {x:138, y:0}]);
-                x_offset += 145;
-                this.addDropZone({x:x_start + x_offset, y:y_start + y_offset}, [{x:0, y:0}, {x:0, y:125}, {x:138, y:125}, {x:138, y:0}]);
-                y_offset += 130;
-                this.addDropZone({x:x_start + x_offset, y:y_start + y_offset}, [{x:0, y:0}, {x:0, y:125}, {x:138, y:125}, {x:138, y:0}]);
-                x_offset -= 145;
-                this.addDropZone({x:x_start + x_offset, y:y_start + y_offset}, [{x:0, y:0}, {x:0, y:125}, {x:138, y:125}, {x:138, y:0}]);
+                for (var i = 10 - 1; i >= 0; i--) {
+                    var card = 'cards_lion_card';
+                    if (i % 7 === 1) {
+                        card = 'cards_scorpion_card';
+                    } else if (i % 4 === 1) {
+                        card = 'cards_rabbit_card';
+                    } else if (i % 5 === 1) {
+                        card = 'cards_giraffe_card';
+                    } else if (i % 3 === 1) {
+                        card = 'cards_pig_card';
+                    }
+                    this.addDraggable({x:510, y:60}, window.bl.getResource(card));
+                }
 
             } else if (question.toolMode === VENN_DIAGRAM) {
 
@@ -933,10 +282,15 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                     self.addDropZone(c1.p, path, c1.label, c1.definitionURL);
 
                 });
+
+                _.each(question.symbols.set_members, function (creature, k) {
+                    var sprite = new StackedSprite();
+
+                    sprite.setup({ layers: creature.sprite });
+                    self.addDraggable({x:510, y:60}, sprite, creature.definitionURL);
+                });
+
             }
-
-            this.addSortables(question);
-
         }
     });
 
