@@ -42,14 +42,21 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                 mode: "venn",
                 autoreject: true,
                 symbols: {
-                    sets: {
+                    lists: {
+                        definitionURL: "local://symbols/lists/unclassified",
                         unclassified: {
                             mathml: "\
-                                <csymbol definitionURL=%22local://symbols/creatures/creature0%22 />\
-                                <csymbol definitionURL=%22local://symbols/creatures/creature1%22 />\
-                                <csymbol definitionURL=%22local://symbols/creatures/creature2%22 />\
-                                <csymbol definitionURL=%22local://symbols/creatures/creature3%22 />"
-                        },
+                                <list>\
+                                    <members>\
+                                        <csymbol definitionURL=%22local://symbols/creatures/creature0%22 />\
+                                        <csymbol definitionURL=%22local://symbols/creatures/creature1%22 />\
+                                        <csymbol definitionURL=%22local://symbols/creatures/creature2%22 />\
+                                        <csymbol definitionURL=%22local://symbols/creatures/creature3%22 />\
+                                    </members>/
+                                </list>"
+                        }
+                    }
+                    sets: {
                         set0: {
                             definitionURL: "local://symbols/sets/set0",
                             mathml: "\
@@ -163,14 +170,16 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                     }
                 },
                 state: "\
-                    <csymbol definitionURL=%22local://symbols/sets/unclassified%22 />\
-                    <csymbol definitionURL=%22local://symbols/sets/set0%22 />\
-                    <csymbol definitionURL=%22local://symbols/sets/set1%22 />\
-                    <csymbol definitionURL=%22local://symbols/sets/set2%22 />",
+                    <state>\
+                        <csymbol definitionURL=%22local://symbols/lists/unclassified%22 />\
+                        <csymbol definitionURL=%22local://symbols/sets/set0%22 />\
+                        <csymbol definitionURL=%22local://symbols/sets/set1%22 />\
+                        <csymbol definitionURL=%22local://symbols/sets/set2%22 />\
+                    </state>",
                 completionEvaluation: "\
                     <apply>\
                         <cardinality/>\
-                        <csymbol definitionURL=%22local://sets/unclassified%22/>\
+                        <csymbol definitionURL=%22local://lists/unclassified%22/>\
                         <cn>0</cn>\
                     </apply>"
             });
