@@ -43,8 +43,8 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                 autoreject: true,
                 symbols: {
                     lists: {
-                        definitionURL: "local://symbols/lists/unclassified",
                         unclassified: {
+                            definitionURL: "local://symbols/lists/unclassified",
                             mathml: "\
                                 <list>\
                                     <members>\
