@@ -203,6 +203,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
 
         checkValid: function (dg, inclusive, exclusive) {
 
+            var self = this;
             var expression = ['<apply>'];
 
             expression.push('<and />');
@@ -212,6 +213,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                 expression.push('<csymbol definitionURL="' + dg.definitionURL + '" />');
                 expression.push('<csymbol definitionURL="' + dz.definitionURL + '" />');
                 expression.push('</apply>');
+                self.question.symbols.lists.unclassified.mathml.replace('<csymbol definitionURL="' + dg.definitionURL + '" />', '');
             });
 
             _.each(exclusive, function (dz) {
@@ -223,39 +225,16 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
 
             expression.push('</apply>');
 
+
             console.log({
                 symbols: this.question.symbols,
                 expression: expression.join('')
             })
 
-
-            return true;
-            return Math.random() > 0.5;
-
-            // POST:
-
-            // {
-            //     symbols: same as from question,
-            //     expression: construct the following
-            //         <apply>
-            //           <and/>
-            //           <apply>
-            //             <in/>
-            //             <csymbol definitionURL="local://symbols/creatures/creature0" />
-            //             <csymbol definitionURL="local://symbols/sets/set0" />
-            //           </apply>
-            //           <apply>
-            //             <notin/>
-            //             <csymbol definitionURL="local://symbols/creatures/creature0" />
-            //             <csymbol definitionURL="local://symbols/sets/set1" />
-            //           </apply>
-            //           <apply>
-            //             <notin/>
-            //             <csymbol definitionURL="local://symbols/creatures/creature0" />
-            //             <csymbol definitionURL="local://symbols/sets/set2" />
-            //           </apply>
-            //         </apply>
-            // }
+            return window.bl.expressionService.evaluateExpression({
+                symbols: this.question.symbols,
+                expression: expression.join('')
+            });
 
         },
 
