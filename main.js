@@ -247,6 +247,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
         },
 
         _totalLabels: [],
+        _subTotalLabels: [],
         setQuestion: function (question) {
             var self = this;
 
@@ -280,6 +281,8 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
 
                 this.setBackground(window.bl.getResource('table_base'));
 
+                // setup dropzones
+
                 var dz = this.addSplitDropZone(cc.p(370,205), bl.PolyRectMake(0,130,280,130), bl.PolyRectMake(0,0,280,130), question.symbols.sets.set0.label, question.symbols.sets.set0.negationLabel, question.symbols.sets.set0.definitionURL);
                 dz._label.setPosition(0, 195);
                 dz._negationLabel.setPosition(0, 65);
@@ -291,6 +294,35 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                 dz._negationLabel.setPosition(225, 280);
                 dz._negationLabel.setRotation(-90);
                 dz._negationLabel.setAnchorPoint(cc.p(0, 0));
+
+                // add totals
+
+                self._totalLabels[0] = cc.LabelTTF.create('0', "mikadoBold", 30);
+                self._totalLabels[0].setPosition(cc.p(720, 400));
+                self._totalLabels[0].setZOrder(500);
+                self._totalLabels[0].setAnchorPoint(cc.p(0.5, 0.5));
+                self.addChild(self._totalLabels[0]);
+
+                self._totalLabels[1] = cc.LabelTTF.create('0', "mikadoBold", 30);
+                self._totalLabels[1].setPosition(cc.p(720, 265));
+                self._totalLabels[1].setZOrder(500);
+                self._totalLabels[1].setAnchorPoint(cc.p(0.5, 0.5));
+                self.addChild(self._totalLabels[1]);
+
+                self._totalLabels[2] = cc.LabelTTF.create('0', "mikadoBold", 30);
+                self._totalLabels[2].setPosition(cc.p(440, 150));
+                self._totalLabels[2].setZOrder(500);
+                self._totalLabels[2].setAnchorPoint(cc.p(0.5, 0.5));
+                self.addChild(self._totalLabels[2]);
+
+                self._totalLabels[3] = cc.LabelTTF.create('0', "mikadoBold", 30);
+                self._totalLabels[3].setPosition(cc.p(580, 150));
+                self._totalLabels[3].setZOrder(500);
+                self._totalLabels[3].setAnchorPoint(cc.p(0.5, 0.5));
+                self.addChild(self._totalLabels[3]);
+
+
+                // add draggables
 
                 _.each(question.symbols.set_members, function (creature, k) {
                     var sprite = new StackedSprite();
@@ -357,34 +389,42 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                                 var rotation = _.random(-10, 10);
                                 draggable.setRotation(rotation);
 
+                                var sub_totals = {};
                                 var totals = {};
                                 var dgs = self.getControls(DRAGGABLE_PREFIX);
-                                // update totals
+
+                                // update sub_totals
                                 _.each(dgs, function (dg) {
                                     _.each(spots, function (spot, i) {
-                                        totals[i] = totals[i] || 0;
+                                        sub_totals[i] = sub_totals[i] || 0;
                                         if (dg.getPosition().x === spot.x && dg.getPosition().y === spot.y) {
-                                            totals[i] += 1;
+                                            sub_totals[i] += 1;
                                         }
                                     });
                                 });
 
-                                _.each(totals, function (v, k) {
+                                _.each(sub_totals, function (v, k) {
                                     var str = 'x' + v;
-                                    if (_.isUndefined(self._totalLabels[k])) {
-                                        self._totalLabels[k] =  cc.LabelTTF.create(str, "mikadoBold", 12);
-                                        self._totalLabels[k].setPosition(cc.p(spots[k].x + 15, spots[k].y + 20));
-                                        self._totalLabels[k].setZOrder(500);
-                                        self._totalLabels[k].setColor(cc.c3b(224,161,40));
-                                        self._totalLabels[k].setAnchorPoint(cc.p(0, 0));
-                                        self.addChild(self._totalLabels[k]);
+                                    if (_.isUndefined(self._subTotalLabels[k])) {
+                                        self._subTotalLabels[k] =  cc.LabelTTF.create(str, "mikadoBold", 12);
+                                        self._subTotalLabels[k].setPosition(cc.p(spots[k].x + 15, spots[k].y + 20));
+                                        self._subTotalLabels[k].setZOrder(500);
+                                        self._subTotalLabels[k].setColor(cc.c3b(224,161,40));
+                                        self._subTotalLabels[k].setAnchorPoint(cc.p(0, 0));
+                                        self.addChild(self._subTotalLabels[k]);
                                     }
-                                    self._totalLabels[k].setVisible(v > 0);
-                                    if (self._totalLabels[k].getString() !== str) {
-                                        self._totalLabels[k].setRotation(rotation);
+                                    self._subTotalLabels[k].setVisible(v > 0);
+                                    if (self._subTotalLabels[k].getString() !== str) {
+                                        self._subTotalLabels[k].setRotation(rotation);
                                     }
-                                    self._totalLabels[k].setString(str);
-                                });
+                                    self._subTotalLabels[k].setString(str);
+                                });  
+
+                                console.log(self._subTotalLabels[0])
+                                self._totalLabels[0].setString(sub_totals[0] + sub_totals[1]);
+                                self._totalLabels[1].setString(sub_totals[2] + sub_totals[3]);
+                                self._totalLabels[2].setString(sub_totals[0] + sub_totals[1]);
+                                self._totalLabels[3].setString(sub_totals[1] + sub_totals[2]);
 
                             }
                         }
