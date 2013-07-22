@@ -60,22 +60,17 @@ define(['cocos2d', 'bldrawnode', 'underscore'], function (cc, BLDrawNode, _) {
             this._label.setPosition(cc.p(this.getContentSize().width / 2, this.getContentSize().height / 2));
         },
 
-        isPointInside: function (point) {
-            var bBox = this.area.getBoundingBoxToWorld();
-            return cc.Rect.CCRectContainsPoint(bBox, point);
-        },
-
-        isPointInsideArea: function (point) {
+        _isPointInsideArea: function (point, area) {
             var self = this;
 
             var nCross = 0;
 
-            _.each(this.area.vertices, function (p1, i) {
+            _.each(area, function (p1, i) {
                 p1 = {
                     x: p1.x + (self.getPosition().x),
                     y: p1.y + (self.getPosition().y)
                 };
-                var p2 = self.area.vertices[(i + 1) % self.area.vertices.length];
+                var p2 = area[(i + 1) % area.length];
                 p2 = {
                     x: p2.x + (self.getPosition().x),
                     y: p2.y + (self.getPosition().y)
@@ -105,6 +100,10 @@ define(['cocos2d', 'bldrawnode', 'underscore'], function (cc, BLDrawNode, _) {
                 return true;
             }
             return false;
+        },
+
+        isPointInsideArea: function (point) {
+            return this._isPointInsideArea(point, this.area.vertices);
         },
 
         showArea: function () {
