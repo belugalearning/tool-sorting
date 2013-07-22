@@ -42,7 +42,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
             cc.Director.getInstance().setDisplayStats(false);
 
             this.setQuestion(
-              contentService.question({
+              window.bl.contentService.question({
                 tool:'sorting',
                 toolMode:'venn',
                 setCategory:'creature',
