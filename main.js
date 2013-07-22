@@ -21,6 +21,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
     var BAR_CHART = 'BAR_CHART';
     var VENN_DIAGRAM = 'venn';
     var TABLE_DIAGRAM = 'table';
+    var BOXES_DIAGRAM = 'boxes';
 
     window.toolTag = 'sorting';
     var Tool = ToolLayer.extend({
@@ -49,6 +50,18 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
               })
             )
             return this;
+        },
+
+        reset: function () {
+            this._background = undefined;
+            this._backgroundLayer = undefined;
+            this._draggableCounter = 0;
+            this._draggableLayer = undefined;
+            this._prevDraggable = undefined;
+            this._dropzoneCounter = 0;
+            this._totalLabels = [];
+            this._subTotalLabels = [];
+            this._super();
         },
 
         setBackground: function (resource) {
@@ -251,7 +264,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
         setQuestion: function (question) {
             var self = this;
 
-            question.toolMode = TABLE_DIAGRAM;
+            // question.toolMode = TABLE_DIAGRAM;
 
             this._super(question);
 
@@ -276,6 +289,16 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                     }
                     this.addDraggable({x:510, y:60}, window.bl.getResource(card));
                 }
+
+            } else if (question.toolMode === BOXES_DIAGRAM) {
+
+                this.setBackground(window.bl.getResource('boxes_base'));
+
+                _.each(question.symbols.set_members, function (creature, k) {
+                    var sprite = new StackedSprite();
+                    sprite.setup({ layers: creature.sprite });
+                    self.addDraggable({x:510, y:60}, sprite, creature.definitionURL);
+                });
 
             } else if (question.toolMode === TABLE_DIAGRAM) {
 
