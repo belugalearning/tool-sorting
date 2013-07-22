@@ -63,22 +63,10 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
         _draggableCounter: 0,
         _draggableLayer: undefined,
         _prevDraggable: undefined,
-        addDraggable: function (position, resource, definitionURL) {
+        addDraggable: function (position, resource, definitionURL, onMoved, onMoveEnded) {
             var self = this;
-            if (_.isUndefined(this._draggableLayer)) {
-                this._draggableLayer = DraggableLayer.create();
-                this.addChild(this._draggableLayer, DRAGGABLE_Z);
-            }
-            var dg = new Draggable();
-            dg.definitionURL = definitionURL;
-            dg.tag = 'dg-' + this._draggableCounter;
-            if (typeof resource === 'object') {
-                dg.initWithSprite(resource);
-            } else {
-                dg.initWithFile(resource);
-            }
-            dg.setPosition(position.x, position.y);
-            dg.onMoved(function (position, draggable) {
+
+            onMoved = onMoved || function (position, draggable) {
                 var dzs = self.getControls(DROPZONE_PREFIX);
                 self._draggableLayer.reorderChild(draggable, self._draggableCounter);
                 self._draggableLayer.sortAllChildren();
@@ -97,8 +85,9 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                     self._draggableCounter++;
                 }
                 self._prevDraggable = draggable.tag;
-            });
-            dg.onMoveEnded(function (position, draggable) {
+            };
+
+            onMoveEnded = onMoveEnded || function (position, draggable) {
                 var dzs = self.getControls(DROPZONE_PREFIX);
                 var inclusive = [];
                 var exclusive = [];
@@ -114,7 +103,23 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                 if (!self.checkValid(dg, inclusive, exclusive)) {
                     dg.returnToLastPosition();
                 }
-            });
+            };
+
+            if (_.isUndefined(this._draggableLayer)) {
+                this._draggableLayer = DraggableLayer.create();
+                this.addChild(this._draggableLayer, DRAGGABLE_Z);
+            }
+            var dg = new Draggable();
+            dg.definitionURL = definitionURL;
+            dg.tag = 'dg-' + this._draggableCounter;
+            if (typeof resource === 'object') {
+                dg.initWithSprite(resource);
+            } else {
+                dg.initWithFile(resource);
+            }
+            dg.setPosition(position.x, position.y);
+            dg.onMoved(onMoved);
+            dg.onMoveEnded(onMoveEnded);
             this._draggableLayer.addChild(dg);
             this.registerControl(DRAGGABLE_PREFIX + this._draggableCounter, dg);
             this._draggableCounter++;
