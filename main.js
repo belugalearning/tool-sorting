@@ -69,6 +69,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
             var self = this;
 
             onMoved = onMoved || function (position, draggable) {
+                draggable.setRotation(0);
                 var dzs = self.getControls(DROPZONE_PREFIX);
                 self._draggableLayer.reorderChild(draggable, self._draggableCounter);
                 self._draggableLayer.sortAllChildren();
@@ -104,6 +105,8 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                 });
                 if (!self.checkValid(draggable, inclusive, exclusive)) {
                     draggable.returnToLastPosition();
+                } else {
+                    draggable.setRotation(_.random(-10, 10));
                 }
             };
 
@@ -243,8 +246,11 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
 
         },
 
+        _totalLabels: [],
         setQuestion: function (question) {
             var self = this;
+
+            question.toolMode = TABLE_DIAGRAM;
 
             this._super(question);
 
@@ -285,7 +291,6 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                 dz._negationLabel.setPosition(225, 280);
                 dz._negationLabel.setRotation(-90);
                 dz._negationLabel.setAnchorPoint(cc.p(0, 0));
-
 
                 _.each(question.symbols.set_members, function (creature, k) {
                     var sprite = new StackedSprite();
@@ -346,9 +351,41 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                                         distance = distanceSq;
                                         index = i;
                                     }
-                                })
+                                });
+
                                 draggable.setPosition(spots[index]);
-                                draggable.setRotation(_.random(-10, 10));
+                                var rotation = _.random(-10, 10);
+                                draggable.setRotation(rotation);
+
+                                var totals = {};
+                                var dgs = self.getControls(DRAGGABLE_PREFIX);
+                                // update totals
+                                _.each(dgs, function (dg) {
+                                    _.each(spots, function (spot, i) {
+                                        totals[i] = totals[i] || 0;
+                                        if (dg.getPosition().x === spot.x && dg.getPosition().y === spot.y) {
+                                            totals[i] += 1;
+                                        }
+                                    });
+                                });
+
+                                _.each(totals, function (v, k) {
+                                    var str = 'x' + v;
+                                    if (_.isUndefined(self._totalLabels[k])) {
+                                        self._totalLabels[k] =  cc.LabelTTF.create(str, "mikadoBold", 12);
+                                        self._totalLabels[k].setPosition(cc.p(spots[k].x + 15, spots[k].y + 20));
+                                        self._totalLabels[k].setZOrder(500);
+                                        self._totalLabels[k].setColor(cc.c3b(224,161,40));
+                                        self._totalLabels[k].setAnchorPoint(cc.p(0, 0));
+                                        self.addChild(self._totalLabels[k]);
+                                    }
+                                    self._totalLabels[k].setVisible(v > 0);
+                                    if (self._totalLabels[k].getString() !== str) {
+                                        self._totalLabels[k].setRotation(rotation);
+                                    }
+                                    self._totalLabels[k].setString(str);
+                                });
+
                             }
                         }
                     );
