@@ -213,7 +213,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                 expression.push('<csymbol definitionURL="' + dg.definitionURL + '" />');
                 expression.push('<csymbol definitionURL="' + dz.definitionURL + '" />');
                 expression.push('</apply>');
-                self.question.symbols.lists.unclassified.mathml.replace('<csymbol definitionURL="' + dg.definitionURL + '" />', '');
+                self.question.symbols.lists.unclassified.mathml = self.question.symbols.lists.unclassified.mathml.replace('<csymbol definitionURL="' + dg.definitionURL + '" />', '');
             });
 
             _.each(exclusive, function (dz) {
