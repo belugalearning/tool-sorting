@@ -271,6 +271,11 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                 if (question.symbols.sets.hasOwnProperty(key)) setLength++;
             }
 
+            var setMemberLength = 0, key;
+            for (key in question.symbols.set_members) {
+                if (question.symbols.set_members.hasOwnProperty(key)) setMemberLength++;
+            }
+
             if (question.toolMode === BAR_CHART) {
 
                 this.setBackground(window.bl.getResource('barchart_base'));
@@ -285,10 +290,47 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                     dz._label.setFontSize(15);
                 }
 
+                var placed = 0;
+                var colours = [cc.c4f(241/255,201/255,46/255,255/255), cc.c4f(45/255,211/255,43/255,255/255), cc.c4f(47/255,185/255,196/255,255/255), cc.c4f(226/255,68/255,46/255,255/255), cc.c4f(244/255,100/255,185/255,255/255)];
                 _.each(question.symbols.set_members, function (creature, k) {
                     var sprite = new StackedSprite();
                     sprite.setup({ layers: creature.sprite });
-                    self.addDraggable({x:510, y:60}, sprite, creature.definitionURL);
+                    self.addDraggable({x:510, y:60}, sprite, creature.definitionURL, undefined, function (position, draggable) {
+                        var dzs = self.getControls(DROPZONE_PREFIX);
+                        var inclusive = [];
+                        var exclusive = [];
+                        _.each(dzs, function(dz) {
+                            if (dz.isPointInsideArea(position)) {
+                                dz.findPositionFor(draggable);
+                                inclusive.push(dz);
+                                dz.placed = dz.placed || 0;
+                                dz.placed++;
+                            } else {
+                                exclusive.push(dz);
+                            }
+                            dz.hideArea();
+                        });
+                        if (!self.checkValid(draggable, inclusive, exclusive)) {
+                            draggable.returnToLastPosition();
+                        } else {
+                            placed++;
+                            draggable.setRotation(_.random(-10, 10));
+                            if (placed >= setMemberLength) {
+
+                                var dgs = self.getControls(DRAGGABLE_PREFIX);
+                                _.each(dgs, function(dg) {
+                                    dg.setVisible(false);
+                                });
+                                var maxPlaced = _.max(dzs, function(dz) { return dz.placed }).placed;
+                                _.each(dzs, function(dz, i) {
+                                    dz.area.clear();
+                                    console.log(colours[i])
+                                    dz.area.drawPoly(bl.PolyRectMake(0, 2, 120, (dz.placed / maxPlaced) * 600), colours[i], 2, cc.c4f(0,0,0,1));
+                                    dz.showArea();
+                                });
+                            }
+                        }
+                    });
                 });
 
             } else if (question.toolMode === BOXES_DIAGRAM) {
