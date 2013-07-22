@@ -18,7 +18,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
     var DROPZONE_Z = 1;
     var DRAGGABLE_Z = 2;
 
-    var BAR_CHART = 'BAR_CHART';
+    var BAR_CHART = 'bar';
     var VENN_DIAGRAM = 'venn';
     var TABLE_DIAGRAM = 'table';
     var BOXES_DIAGRAM = 'boxes';
@@ -264,31 +264,32 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
         setQuestion: function (question) {
             var self = this;
 
-            // question.toolMode = TABLE_DIAGRAM;
-
             this._super(question);
+
+            var setLength = 0, key;
+            for (key in question.symbols.sets) {
+                if (question.symbols.sets.hasOwnProperty(key)) setLength++;
+            }
 
             if (question.toolMode === BAR_CHART) {
 
                 this.setBackground(window.bl.getResource('barchart_base'));
                 
-                for (var i = 4; i >= 0; i--) {
-                    this.addDropZone({x:140 + (i * 155), y:145}, [{x:0, y:0}, {x:0, y:600}, {x:120, y:600}, {x:120, y:0}]);
+                for (var i = 0; i < setLength; i++) {
+                    var dz = this.addDropZone({
+                        x:140 + (i * 155), y:145},
+                        [{x:0, y:0}, {x:0, y:600}, {x:120, y:600}, {x:120, y:0}],
+                        question.symbols.sets['set' + i].label,
+                        question.symbols.sets['set' + i].definitionURL);
+                    dz._label.setPosition(60, -20);
+                    dz._label.setFontSize(15);
                 }
 
-                for (var i = 10 - 1; i >= 0; i--) {
-                    var card = 'cards_lion_card';
-                    if (i % 7 === 1) {
-                        card = 'cards_scorpion_card';
-                    } else if (i % 4 === 1) {
-                        card = 'cards_rabbit_card';
-                    } else if (i % 5 === 1) {
-                        card = 'cards_giraffe_card';
-                    } else if (i % 3 === 1) {
-                        card = 'cards_pig_card';
-                    }
-                    this.addDraggable({x:510, y:60}, window.bl.getResource(card));
-                }
+                _.each(question.symbols.set_members, function (creature, k) {
+                    var sprite = new StackedSprite();
+                    sprite.setup({ layers: creature.sprite });
+                    self.addDraggable({x:510, y:60}, sprite, creature.definitionURL);
+                });
 
             } else if (question.toolMode === BOXES_DIAGRAM) {
 
@@ -307,8 +308,8 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                 // setup dropzones
 
                 var dz = this.addSplitDropZone(cc.p(370,205), bl.PolyRectMake(0,130,280,130), bl.PolyRectMake(0,0,280,130), question.symbols.sets.set0.label, question.symbols.sets.set0.negationLabel, question.symbols.sets.set0.definitionURL);
-                dz._label.setPosition(0, 195);
-                dz._negationLabel.setPosition(0, 65);
+                dz._label.setPosition(-20, 195);
+                dz._negationLabel.setPosition(-20, 65);
 
                 dz = this.addSplitDropZone(cc.p(370,207), bl.PolyRectMake(0,0,140,255), bl.PolyRectMake(140,0,140,255), question.symbols.sets.set1.label, question.symbols.sets.set1.negationLabel, question.symbols.sets.set1.definitionURL);
                 dz._label.setPosition(90, 280);
@@ -441,9 +442,8 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                                         self._subTotalLabels[k].setRotation(rotation);
                                     }
                                     self._subTotalLabels[k].setString(str);
-                                });  
+                                });
 
-                                console.log(self._subTotalLabels[0])
                                 self._totalLabels[0].setString(sub_totals[0] + sub_totals[1]);
                                 self._totalLabels[1].setString(sub_totals[2] + sub_totals[3]);
                                 self._totalLabels[2].setString(sub_totals[0] + sub_totals[1]);
