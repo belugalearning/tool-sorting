@@ -2,12 +2,13 @@ require.config({
     paths: {
         'dropzone': '../../tools/sorting/dropzone',
         'circulardropzone': '../../tools/sorting/circulardropzone',
+        'splitdropzone': '../../tools/sorting/splitdropzone',
         'draggable': '../../tools/sorting/draggable',
         'draggableLayer': '../../tools/sorting/draggableLayer'
     }
 });
 
-define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedsprite', 'dropzone', 'draggable', 'draggableLayer', 'circulardropzone'], function (exports, cc, QLayer, Polygon, ToolLayer, StackedSprite, DropZone, Draggable, DraggableLayer, CircularDropZone) {
+define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedsprite', 'dropzone', 'draggable', 'draggableLayer', 'circulardropzone', 'splitdropzone'], function (exports, cc, QLayer, Polygon, ToolLayer, StackedSprite, DropZone, Draggable, DraggableLayer, CircularDropZone, SplitDropZone) {
     'use strict';
 
     var DRAGGABLE_PREFIX = 'DRAGGABLE_';
@@ -19,6 +20,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
 
     var BAR_CHART = 'BAR_CHART';
     var VENN_DIAGRAM = 'venn';
+    var TABLE_DIAGRAM = 'table';
 
     window.toolTag = 'sorting';
     var Tool = ToolLayer.extend({
@@ -100,8 +102,8 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                     }
                     dz.hideArea();
                 });
-                if (!self.checkValid(dg, inclusive, exclusive)) {
-                    dg.returnToLastPosition();
+                if (!self.checkValid(draggable, inclusive, exclusive)) {
+                    draggable.returnToLastPosition();
                 }
             };
 
@@ -158,6 +160,27 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
             return this._addDropZone.apply(this, args);
         },
 
+        addSplitDropZone: function (position, shape, negationShape, label, negationLabel, definitionURL, bgResource) {
+            var dz = new SplitDropZone();
+            var clc = cc.Layer.create();
+            dz.definitionURL = definitionURL;
+            if (_.isUndefined(bgResource)) {
+                dz.init();
+            } else {
+                dz.initWithFile(bgResource);
+            }
+            dz.setPosition(position.x, position.y);
+            dz.setShape(shape);
+            dz.setNegationShape(negationShape);
+            dz.setLabel(label);
+            dz.setNegationLabel(negationLabel);
+            clc.addChild(dz);
+            this.registerControl(DROPZONE_PREFIX + this._dropzoneCounter, dz);
+            this.addChild(clc, DROPZONE_Z);
+            this._dropzoneCounter++;
+            return dz;
+        },
+
         getState: function () {
             throw {name : "NotImplementedError", message : "This needs implementing"};
         },
@@ -190,6 +213,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
             })
 
 
+            return true;
             return Math.random() > 0.5;
 
             // POST:
@@ -245,6 +269,90 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                     }
                     this.addDraggable({x:510, y:60}, window.bl.getResource(card));
                 }
+
+            } else if (question.toolMode === TABLE_DIAGRAM) {
+
+                this.setBackground(window.bl.getResource('table_base'));
+
+                var dz = this.addSplitDropZone(cc.p(370,205), bl.PolyRectMake(0,130,280,130), bl.PolyRectMake(0,0,280,130), question.symbols.sets.set0.label, question.symbols.sets.set0.negationLabel, question.symbols.sets.set0.definitionURL);
+                dz._label.setPosition(0, 195);
+                dz._negationLabel.setPosition(0, 65);
+
+                dz = this.addSplitDropZone(cc.p(370,207), bl.PolyRectMake(0,0,140,255), bl.PolyRectMake(140,0,140,255), question.symbols.sets.set1.label, question.symbols.sets.set1.negationLabel, question.symbols.sets.set1.definitionURL);
+                dz._label.setPosition(90, 280);
+                dz._label.setRotation(-90);
+                dz._label.setAnchorPoint(cc.p(0, 0));
+                dz._negationLabel.setPosition(225, 280);
+                dz._negationLabel.setRotation(-90);
+                dz._negationLabel.setAnchorPoint(cc.p(0, 0));
+
+
+                _.each(question.symbols.set_members, function (creature, k) {
+                    var sprite = new StackedSprite();
+                    sprite.setup({ layers: creature.sprite });
+                    self.addDraggable({x:510, y:60}, sprite, creature.definitionURL,
+                        function onMoved (position, draggable) {
+                            draggable.setRotation(0);
+                            var dzs = self.getControls(DROPZONE_PREFIX);
+                            self._draggableLayer.reorderChild(draggable, self._draggableCounter);
+                            self._draggableLayer.sortAllChildren();
+                            self._draggableLayer.reshuffleTouchHandlers();
+
+                            _.each(dzs, function(dz) {
+                                // todo check center point of draggable, not touch point
+                                //
+                                if (dz.isPointInsideArea(position)) {
+                                    dz.showArea();
+                                    dz.hideNegationArea();
+                                } else {
+                                    dz.hideArea();
+
+                                    if (dz.isPointInsideNegationArea(position)) {
+                                        dz.showNegationArea();
+                                    } else {
+                                        dz.hideNegationArea();
+                                    }
+                                }
+                            });
+                            if (self._prevDraggable !== draggable.tag) {
+                                self._draggableCounter++;
+                            }
+                            self._prevDraggable = draggable.tag;
+                        },
+                        function onMoveEnded (position, draggable) {
+                            var dzs = self.getControls(DROPZONE_PREFIX);
+                            var inclusive = [];
+                            var exclusive = [];
+                            _.each(dzs, function(dz) {
+                                if (dz.isPointInsideArea(position)) {
+                                    inclusive.push(dz);
+                                } else if (dz.isPointInsideNegationArea(position)) {
+                                    exclusive.push(dz);
+                                } 
+                                dz.hideArea();
+                                dz.hideNegationArea();
+                            });
+                            if (inclusive.length + exclusive.length < 2 || !self.checkValid(draggable, inclusive, exclusive)) {
+                                draggable.returnToLastPosition();
+                            } else {
+                                var spots = [cc.p(440, 400), cc.p(580, 400), cc.p(580, 265), cc.p(440, 265)];
+                                var distance = 9999999 * 99999999;
+                                var index = 0;
+                                _.each(spots, function (spot, i) {
+                                    var x = Math.abs(position.x - spot.x);
+                                    var y = Math.abs(position.y - spot.y);
+                                    var distanceSq = Math.min(x * x + y * y, distance);
+                                    if (distanceSq < distance) {
+                                        distance = distanceSq;
+                                        index = i;
+                                    }
+                                })
+                                draggable.setPosition(spots[index]);
+                                draggable.setRotation(_.random(-10, 10));
+                            }
+                        }
+                    );
+                });
 
             } else if (question.toolMode === VENN_DIAGRAM) {
 
@@ -315,7 +423,6 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
 
                 _.each(question.symbols.set_members, function (creature, k) {
                     var sprite = new StackedSprite();
-
                     sprite.setup({ layers: creature.sprite });
                     self.addDraggable({x:510, y:60}, sprite, creature.definitionURL);
                 });
