@@ -8,7 +8,7 @@ require.config({
     }
 });
 
-define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedsprite', 'dropzone', 'draggable', 'draggableLayer', 'circulardropzone', 'splitdropzone'], function (exports, cc, QLayer, Polygon, ToolLayer, StackedSprite, DropZone, Draggable, DraggableLayer, CircularDropZone, SplitDropZone) {
+define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer', 'stackedsprite', 'dropzone', 'draggable', 'draggableLayer', 'circulardropzone', 'splitdropzone'], function (exports, cc, QLayer, BLDrawNode, Polygon, ToolLayer, StackedSprite, DropZone, Draggable, DraggableLayer, CircularDropZone, SplitDropZone) {
     'use strict';
 
     var DRAGGABLE_PREFIX = 'DRAGGABLE_';
@@ -225,11 +225,10 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
 
             expression.push('</apply>');
 
-
             console.log({
                 symbols: this.question.symbols,
                 expression: expression.join('')
-            })
+            });
 
             return window.bl.expressionService.evaluateExpression({
                 symbols: this.question.symbols,
@@ -266,7 +265,7 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                         question.symbols.sets['set' + i].label,
                         question.symbols.sets['set' + i].definitionURL);
                     dz._label.setPosition(60, -20);
-                    dz._label.setFontSize(15);
+                    dz._label.setFontSize(20);
                 }
 
                 var placed = 0;
@@ -306,6 +305,20 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                                     console.log(colours[i])
                                     dz.area.drawPoly(bl.PolyRectMake(0, 2, 120, (dz.placed / maxPlaced) * 600), colours[i], 2, cc.c4f(0,0,0,1));
                                     dz.showArea();
+                                });
+
+                                // add y axis
+                                self.yAxis = new BLDrawNode();
+                                self.yAxis.setZOrder(1);
+                                self.addChild(self.yAxis);
+                                self.yAxis.drawPoly(bl.PolyRectMake(115, 145, 0, 610), cc.c4f(0,0,0,1), 3, cc.c4f(0,0,0,1));
+
+                                var interval = 600 / maxPlaced;
+                                _.times(maxPlaced + 1, function (i) {
+                                    self.yAxis.drawPoly(bl.PolyRectMake(95, 145 + i * interval, 20, 0), cc.c4f(0,0,0,1), 3, cc.c4f(0,0,0,1));
+                                    var label = cc.LabelTTF.create(i, "mikadoBold", 20);
+                                    self.addChild(label);
+                                    label.setPosition(cc.p(75, 145 + i * interval))
                                 });
                             }
                         }
