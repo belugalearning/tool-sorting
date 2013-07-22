@@ -1,12 +1,13 @@
 require.config({
     paths: {
         'dropzone': '../../tools/sorting/dropzone',
+        'circulardropzone': '../../tools/sorting/circulardropzone',
         'draggable': '../../tools/sorting/draggable',
         'draggableLayer': '../../tools/sorting/draggableLayer'
     }
 });
 
-define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedsprite', 'dropzone', 'draggable', 'draggableLayer'], function (exports, cc, QLayer, Polygon, ToolLayer, StackedSprite, DropZone, Draggable, DraggableLayer) {
+define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedsprite', 'dropzone', 'draggable', 'draggableLayer', 'circulardropzone'], function (exports, cc, QLayer, Polygon, ToolLayer, StackedSprite, DropZone, Draggable, DraggableLayer, CircularDropZone) {
     'use strict';
 
     var DRAGGABLE_PREFIX = 'DRAGGABLE_';
@@ -120,9 +121,8 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
         },
 
         _dropzoneCounter: 0,
-        addDropZone: function (position, shape, label, definitionURL, bgResource) {
+        _addDropZone: function (dz, position, shape, label, definitionURL, bgResource) {
             var clc = cc.Layer.create();
-            var dz = new DropZone();
             dz.definitionURL = definitionURL;
             if (_.isUndefined(bgResource)) {
                 dz.init();
@@ -136,6 +136,21 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
             this.registerControl(DROPZONE_PREFIX + this._dropzoneCounter, dz);
             this.addChild(clc, DROPZONE_Z);
             this._dropzoneCounter++;
+            return dz;
+        },
+
+        addDropZone: function (position, shape, label, definitionURL, bgResource) {
+            var args = Array.prototype.slice.call(arguments);
+            var dz = new DropZone();
+            args.unshift(dz);
+            return this._addDropZone.apply(this, args);
+        },
+
+        addCircularDropZone: function (position, shape, label, definitionURL, bgResource) {
+            var dz = new CircularDropZone();
+            var args = Array.prototype.slice.call(arguments);
+            args.unshift(dz);
+            return this._addDropZone.apply(this, args);
         },
 
         getState: function () {
@@ -279,7 +294,17 @@ define(['exports', 'cocos2d', 'qlayer', 'polygonclip', 'toollayer', 'stackedspri
                     path = _.map(path, function (p) {
                         return cc.p(p.x - c1.p.x, p.y - c1.p.y);
                     });
-                    self.addDropZone(c1.p, path, c1.label, c1.definitionURL);
+                    var dz = self.addCircularDropZone(c1.p, path, c1.label, c1.definitionURL);
+
+                    if (i === 0) {
+                        dz._label.setRotation(45);
+                        dz._label.setPosition(cc.p(dz.getContentSize().width * 0.3, dz.getContentSize().height * 0.3));
+                    } else if (i === 1) {
+                        dz._label.setRotation(-45);
+                        dz._label.setPosition(cc.p(dz.getContentSize().width * 0.7, dz.getContentSize().height * 0.3));
+                    } else if (i === 2) {
+                        dz._label.setPosition(cc.p(dz.getContentSize().width * 0.5, dz.getContentSize().height * 0.7));
+                    }
 
                 });
 
