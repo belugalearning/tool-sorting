@@ -42,10 +42,6 @@ define(['cocos2d', 'bldrawnode', 'underscore'], function (cc, BLDrawNode, _) {
                 this.area.drawPoly(shape, cc.c4f(255, 0, 0, 0.2), 1, cc.c4f(255,0,0,0.2));
                 size = this._getPolySize(shape);
                 this.setContentSize(size);
-            } else {
-                size = cc.SizeMake(shape * 2, shape * 2);
-                this.setContentSize(size);
-                this.area.drawCircle(cc.p(shape,shape), shape, 2 * Math.PI, 2, false, cc.c4f(1, 0, 0, 0.2), 1, cc.c4f(1,0,0,0.2));  
             }
 
             if (cc.SPRITE_DEBUG_DRAW > 0) {
