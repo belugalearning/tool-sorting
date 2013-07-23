@@ -351,14 +351,18 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
                 var dz = this.addSplitDropZone(cc.p(370,205), bl.PolyRectMake(0,130,280,130), bl.PolyRectMake(0,0,280,130), question.symbols.sets.set0.label, question.symbols.sets.set0.negationLabel, question.symbols.sets.set0.definitionURL);
                 dz._label.setPosition(-20, 195);
+                dz._label.setFontSize(20);
                 dz._negationLabel.setPosition(-20, 65);
+                dz._negationLabel.setFontSize(20);
 
                 dz = this.addSplitDropZone(cc.p(370,207), bl.PolyRectMake(0,0,140,255), bl.PolyRectMake(140,0,140,255), question.symbols.sets.set1.label, question.symbols.sets.set1.negationLabel, question.symbols.sets.set1.definitionURL);
                 dz._label.setPosition(90, 280);
                 dz._label.setRotation(-90);
+                dz._label.setFontSize(20);
                 dz._label.setAnchorPoint(cc.p(0, 0));
                 dz._negationLabel.setPosition(225, 280);
                 dz._negationLabel.setRotation(-90);
+                dz._negationLabel.setFontSize(20);
                 dz._negationLabel.setAnchorPoint(cc.p(0, 0));
 
                 // add totals
