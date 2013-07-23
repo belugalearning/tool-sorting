@@ -296,6 +296,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         });
                         if (!self.checkValid(draggable, inclusive, exclusive)) {
                             draggable.returnToLastPosition();
+                            _.each(inclusive, function (dz) {
+                                dz.placed--;
+                            });
                         } else {
                             placed++;
                             draggable.setRotation(_.random(-10, 10));
