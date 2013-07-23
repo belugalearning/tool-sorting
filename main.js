@@ -254,6 +254,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 if (question.symbols.set_members.hasOwnProperty(key)) setMemberLength++;
             }
 
+            var members = $($.parseXML(question.symbols.lists.unclassified.mathml)).find('csymbol').toArray().map(function(csymbol) { var id = $(csymbol).attr('definitionURL').match(/[^/]+$/)[0]; return question.symbols.set_members[id]; });
+
+
             if (question.toolMode === BAR_CHART) {
 
                 this.setBackground(window.bl.getResource('barchart_base'));
@@ -269,8 +272,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 }
 
                 var placed = 0;
+                var maxCards = 6;
+                var spaceHeight = 600 / maxCards;
                 var colours = [cc.c4f(241/255,201/255,46/255,255/255), cc.c4f(45/255,211/255,43/255,255/255), cc.c4f(47/255,185/255,196/255,255/255), cc.c4f(226/255,68/255,46/255,255/255), cc.c4f(244/255,100/255,185/255,255/255)];
-                _.each(question.symbols.set_members, function (creature, k) {
+                _.each(members, function (creature, k) {
+
                     var sprite = new StackedSprite();
                     sprite.setup({ layers: creature.sprite });
                     self.addDraggable({x:510, y:60}, sprite, creature.definitionURL, undefined, function (position, draggable) {
@@ -293,6 +299,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         } else {
                             placed++;
                             draggable.setRotation(_.random(-10, 10));
+                            draggable.setPosition(cc.p(inclusive[0].getPosition().x + 60, inclusive[0].getPosition().y + (inclusive[0].placed * 100) - 50));
                             if (placed >= setMemberLength) {
 
                                 var dgs = self.getControls(DRAGGABLE_PREFIX);
@@ -302,8 +309,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                 var maxPlaced = _.max(dzs, function(dz) { return dz.placed }).placed;
                                 _.each(dzs, function(dz, i) {
                                     dz.area.clear();
-                                    console.log(colours[i])
-                                    dz.area.drawPoly(bl.PolyRectMake(0, 2, 120, (dz.placed / maxPlaced) * 600), colours[i], 2, cc.c4f(0,0,0,1));
+                                    dz.area.drawPoly(bl.PolyRectMake(0, 2, 120, dz.placed * spaceHeight), colours[i], 2, cc.c4f(0,0,0,1));
                                     dz.showArea();
                                 });
 
@@ -313,12 +319,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                 self.addChild(self.yAxis);
                                 self.yAxis.drawPoly(bl.PolyRectMake(115, 145, 0, 610), cc.c4f(0,0,0,1), 3, cc.c4f(0,0,0,1));
 
-                                var interval = 600 / maxPlaced;
-                                _.times(maxPlaced + 1, function (i) {
-                                    self.yAxis.drawPoly(bl.PolyRectMake(95, 145 + i * interval, 20, 0), cc.c4f(0,0,0,1), 3, cc.c4f(0,0,0,1));
+                                _.times(maxCards + 1, function (i) {
+                                    self.yAxis.drawPoly(bl.PolyRectMake(95, 145 + i * spaceHeight, 20, 0), cc.c4f(0,0,0,1), 3, cc.c4f(0,0,0,1));
                                     var label = cc.LabelTTF.create(i, "mikadoBold", 20);
                                     self.addChild(label);
-                                    label.setPosition(cc.p(75, 145 + i * interval))
+                                    label.setPosition(cc.p(75, 145 + i * spaceHeight))
                                 });
                             }
                         }
@@ -329,7 +334,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
                 this.setBackground(window.bl.getResource('boxes_base'));
 
-                _.each(question.symbols.set_members, function (creature, k) {
+                _.each(members, function (creature, k) {
                     var sprite = new StackedSprite();
                     sprite.setup({ layers: creature.sprite });
                     self.addDraggable({x:510, y:60}, sprite, creature.definitionURL);
@@ -382,7 +387,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
                 // add draggables
 
-                _.each(question.symbols.set_members, function (creature, k) {
+                _.each(members, function (creature, k) {
                     var sprite = new StackedSprite();
                     sprite.setup({ layers: creature.sprite });
                     self.addDraggable({x:510, y:60}, sprite, creature.definitionURL,
@@ -545,17 +550,17 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
                     if (i === 0) {
                         dz._label.setRotation(45);
-                        dz._label.setPosition(cc.p(dz.getContentSize().width * 0.3, dz.getContentSize().height * 0.3));
+                        dz._label.setPosition(cc.p(dz.getContentSize().width * -0.0001, dz.getContentSize().height * -0.0001));
                     } else if (i === 1) {
                         dz._label.setRotation(-45);
-                        dz._label.setPosition(cc.p(dz.getContentSize().width * 0.7, dz.getContentSize().height * 0.3));
+                        dz._label.setPosition(cc.p(dz.getContentSize().width * 1, dz.getContentSize().height * -0.0001));
                     } else if (i === 2) {
-                        dz._label.setPosition(cc.p(dz.getContentSize().width * 0.5, dz.getContentSize().height * 0.7));
+                        dz._label.setPosition(cc.p(dz.getContentSize().width * 0.5, dz.getContentSize().height * 1.2));
                     }
 
                 });
 
-                _.each(question.symbols.set_members, function (creature, k) {
+                _.each(members, function (creature, k) {
                     var sprite = new StackedSprite();
                     sprite.setup({ layers: creature.sprite });
                     self.addDraggable({x:510, y:60}, sprite, creature.definitionURL);
