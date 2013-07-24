@@ -274,7 +274,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 var placed = 0;
                 var maxCards = 6;
                 var spaceHeight = 600 / maxCards;
-                var colours = [cc.c4f(241/255,201/255,46/255,255/255), cc.c4f(45/255,211/255,43/255,255/255), cc.c4f(47/255,185/255,196/255,255/255), cc.c4f(226/255,68/255,46/255,255/255), cc.c4f(244/255,100/255,185/255,255/255)];
+                var colours = [cc.c4FFromccc4B(241,201,46,255), cc.c4FFromccc4B(45,211,43,255), cc.c4FFromccc4B(47,185,196,255), cc.c4FFromccc4B(226,68,46,255), cc.c4FFromccc4B(244,100,185,255)];
                 _.each(members, function (creature, k) {
 
                     var sprite = new StackedSprite();
