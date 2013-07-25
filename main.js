@@ -14,7 +14,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
     var BACKGROUND_Z = 0;
     var DROPZONE_Z = 1;
-    var DRAGGABLE_Z = 2;
+    var LABEL_Z = 2;
+    var DRAGGABLE_Z = 3;
 
     var BAR_CHART = 'bar';
     var VENN_DIAGRAM = 'venn';
@@ -367,25 +368,25 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
                 self._totalLabels[0] = cc.LabelTTF.create('0', "mikadoBold", 30);
                 self._totalLabels[0].setPosition(cc.p(720, 400));
-                self._totalLabels[0].setZOrder(500);
+                self._totalLabels[0].setZOrder(LABEL_Z);
                 self._totalLabels[0].setAnchorPoint(cc.p(0.5, 0.5));
                 self.addChild(self._totalLabels[0]);
 
                 self._totalLabels[1] = cc.LabelTTF.create('0', "mikadoBold", 30);
                 self._totalLabels[1].setPosition(cc.p(720, 265));
-                self._totalLabels[1].setZOrder(500);
+                self._totalLabels[1].setZOrder(LABEL_Z);
                 self._totalLabels[1].setAnchorPoint(cc.p(0.5, 0.5));
                 self.addChild(self._totalLabels[1]);
 
                 self._totalLabels[2] = cc.LabelTTF.create('0', "mikadoBold", 30);
                 self._totalLabels[2].setPosition(cc.p(440, 150));
-                self._totalLabels[2].setZOrder(500);
+                self._totalLabels[2].setZOrder(LABEL_Z);
                 self._totalLabels[2].setAnchorPoint(cc.p(0.5, 0.5));
                 self.addChild(self._totalLabels[2]);
 
                 self._totalLabels[3] = cc.LabelTTF.create('0', "mikadoBold", 30);
                 self._totalLabels[3].setPosition(cc.p(580, 150));
-                self._totalLabels[3].setZOrder(500);
+                self._totalLabels[3].setZOrder(LABEL_Z);
                 self._totalLabels[3].setAnchorPoint(cc.p(0.5, 0.5));
                 self.addChild(self._totalLabels[3]);
 
