@@ -402,6 +402,28 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 self.addChild(self._totalLabels[4]);
 
 
+                var visible_areas = [];
+                _.times(2, function (row) {
+                    _.times(2, function (col) {
+
+                        var a = new BLDrawNode();
+                        a.setZOrder(1);
+                        a.setVisible(false);
+                        a.setPosition(cc.p(370 + row * 140,205 + col * 130))
+                        var v = bl.PolyRectMake(0,0,140,130);
+                        a.vertices = v;
+                        a.drawPoly(v, cc.c4FFromccc4B(cc.c4b(35, 35, 35, 50)), 1, cc.c4FFromccc4B(cc.c4b(35,35,35,50)));
+                        
+                        self.addChild(a);
+
+                        visible_areas.push(a);
+
+
+                    });
+                });
+
+
+
                 // add draggables
 
                 _.each(members, function (creature, k) {
@@ -431,6 +453,15 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                     }
                                 }
                             });
+
+                            _.each(visible_areas, function (a) {
+                                if (bl.isPointInsideArea(position, a.vertices, a.getPosition())) {
+                                    a.setVisible(true);
+                                } else {
+                                    a.setVisible(false);                                    
+                                }
+                            })
+
                             if (self._prevDraggable !== draggable.tag) {
                                 self._draggableCounter++;
                             }
@@ -449,6 +480,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                 dz.hideArea();
                                 dz.hideNegationArea();
                             });
+
+                            _.each(visible_areas, function (a) {
+                                a.setVisible(false);
+                            });
+
                             if (inclusive.length + exclusive.length < 2 || !self.checkValid(draggable, inclusive, exclusive)) {
                                 draggable.returnToLastPosition();
                             } else {

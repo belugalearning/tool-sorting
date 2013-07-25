@@ -17,13 +17,34 @@ define(['cocos2d', 'bldrawnode', 'underscore', 'dropzone'], function (cc, BLDraw
             this.negationArea.setZOrder(1);
             this.hideNegationArea();
             this.addChild(this.negationArea);
+
+            this.negationArea = new BLDrawNode();
+            this.negationArea.setZOrder(1);
+            this.hideNegationArea();
+            this.addChild(this.negationArea);
+        },
+
+        setShape: function (shape) {
+            var size = {};
+
+            if (_.isArray(shape)) {
+                this.area.vertices = shape;
+                this.area.drawPoly(shape, cc.c4FFromccc4B(cc.c4b(35, 35, 35, 0)), 1, cc.c4FFromccc4B(cc.c4b(35,35,35,0)));
+                size = this._getPolySize(shape);
+                this.setContentSize(size);
+            }
+
+            if (cc.SPRITE_DEBUG_DRAW > 0) {
+                this.area.drawPoly([cc.p(0,0), cc.p(0, size.height), cc.p(size.width, size.height), cc.p(size.width, 0)], cc.c4f(0, 1, 0, 0), 1, cc.c4f(0,1,0,0.2));
+            }
+
         },
 
         setNegationShape: function (shape) {
             var size = {};
             if (_.isArray(shape)) {
                 this.negationArea.vertices = shape;
-                this.negationArea.drawPoly(shape, cc.c4FFromccc4B(cc.c4b(35, 35, 35, 50)), 1, cc.c4FFromccc4B(cc.c4b(35,35,35,50)));
+                this.negationArea.drawPoly(shape, cc.c4FFromccc4B(cc.c4b(35, 35, 35, 0)), 1, cc.c4FFromccc4B(cc.c4b(35,35,35,0)));
                 size = this._getPolySize(shape);
                 this.setContentSize(size);
             }
@@ -54,23 +75,27 @@ define(['cocos2d', 'bldrawnode', 'underscore', 'dropzone'], function (cc, BLDraw
         },
 
         isPointInsideArea: function (point) {
-            return this._isPointInsideArea(point, this.area.vertices);
+            return bl.isPointInsideArea(point, this.area.vertices, this.getPosition());
         },
 
         isPointInsideNegationArea: function (point) {
-            return this._isPointInsideArea(point, this.negationArea.vertices);
+            return bl.isPointInsideArea(point, this.negationArea.vertices, this.getPosition());
         },
 
         findPositionFor: function (draggable) {
             throw {name : "NotImplementedError", message : "This doesn't exist for SplitDropZone"};
         },
 
+        showArea: function () {
+        },
+
+        hideArea: function () {
+        },
+
         showNegationArea: function () {
-            this.negationArea.setVisible(true);
         },
 
         hideNegationArea: function () {
-            this.negationArea.setVisible(false);
         }
 
     });

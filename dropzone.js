@@ -60,50 +60,8 @@ define(['cocos2d', 'bldrawnode', 'underscore'], function (cc, BLDrawNode, _) {
             this._label.setPosition(cc.p(this.getContentSize().width / 2, this.getContentSize().height / 2));
         },
 
-        _isPointInsideArea: function (point, area) {
-            var self = this;
-
-            var nCross = 0;
-
-            _.each(area, function (p1, i) {
-                p1 = {
-                    x: p1.x + (self.getPosition().x),
-                    y: p1.y + (self.getPosition().y)
-                };
-                var p2 = area[(i + 1) % area.length];
-                p2 = {
-                    x: p2.x + (self.getPosition().x),
-                    y: p2.y + (self.getPosition().y)
-                };
-
-                if (p1.y == p2.y) {
-                    return;
-                }
-
-                if (point.y < Math.min(p1.y, p2.y)) {
-                    return;
-                }
-
-                if (point.y >= Math.max(p1.y, p2.y)) {
-                    return;
-                }
-
-                var x = (point.y - p1.y) * (p2.x - p1.x) / (p2.y - p1.y) + p1.x;
-
-
-                if (x > point.x) {
-                    nCross++;
-                }
-            });
-
-            if (nCross % 2 == 1) {
-                return true;
-            }
-            return false;
-        },
-
         isPointInsideArea: function (point) {
-            return this._isPointInsideArea(point, this.area.vertices);
+            return window.bl.isPointInsideArea(point, this.area.vertices, this.getPosition());
         },
 
         showArea: function () {
