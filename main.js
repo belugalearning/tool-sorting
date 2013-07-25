@@ -2,9 +2,7 @@ require.config({
     paths: {
         'dropzone': '../../tools/sorting/dropzone',
         'circulardropzone': '../../tools/sorting/circulardropzone',
-        'splitdropzone': '../../tools/sorting/splitdropzone',
-        'draggable': '../../tools/sorting/draggable',
-        'draggableLayer': '../../tools/sorting/draggableLayer'
+        'splitdropzone': '../../tools/sorting/splitdropzone'
     }
 });
 
