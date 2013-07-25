@@ -6,13 +6,12 @@ require.config({
     }
 });
 
-define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer', 'stackedsprite', 'dropzone', 'draggable', 'draggableLayer', 'circulardropzone', 'splitdropzone'], function (exports, cc, QLayer, BLDrawNode, Polygon, ToolLayer, StackedSprite, DropZone, Draggable, DraggableLayer, CircularDropZone, SplitDropZone) {
+define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer', 'stackedsprite', 'dropzone', 'draggable', 'draggableLayer', 'circulardropzone', 'splitdropzone', 'blbutton'], function (exports, cc, QLayer, BLDrawNode, Polygon, ToolLayer, StackedSprite, DropZone, Draggable, DraggableLayer, CircularDropZone, SplitDropZone, BlButton) {
     'use strict';
 
     var DRAGGABLE_PREFIX = 'DRAGGABLE_';
     var DROPZONE_PREFIX = 'DROPZONE_';
 
-    var BACKGROUND_Z = 0;
     var DROPZONE_Z = 1;
     var LABEL_Z = 2;
     var DRAGGABLE_Z = 3;
@@ -55,6 +54,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             this._draggableCounter = 0;
             this._draggableLayer = undefined;
             this._prevDraggable = undefined;
+            this._barChartButton = undefined,
             this._dropzoneCounter = 0;
             this._totalLabels = [];
             this._subTotalLabels = [];
@@ -223,6 +223,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
         },
 
+        _barChartButton: undefined,
         _totalLabels: [],
         _subTotalLabels: [],
         setQuestion: function (question) {
@@ -260,7 +261,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 var placed = 0;
                 var maxCards = 6;
                 var spaceHeight = 600 / maxCards;
-                var colours = [cc.c4FFromccc4B(241,201,46,255), cc.c4FFromccc4B(45,211,43,255), cc.c4FFromccc4B(47,185,196,255), cc.c4FFromccc4B(226,68,46,255), cc.c4FFromccc4B(244,100,185,255)];
+                var colours = [cc.c4FFromccc4B({r:241,g:201,b:46,a:255}), cc.c4FFromccc4B({r:45,g:211,b:43,a:255}), cc.c4FFromccc4B({r:47,g:185,b:196,a:255}), cc.c4FFromccc4B({r:226,g:68,b:46,a:255}), cc.c4FFromccc4B({r:244,g:100,b:185,a:255})];
                 _.each(members, function (creature, k) {
 
                     var sprite = new StackedSprite();
@@ -291,29 +292,45 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                             draggable.setPosition(cc.p(inclusive[0].getPosition().x + 60, inclusive[0].getPosition().y + (inclusive[0].placed * 100) - 50));
                             if (placed >= setMemberLength) {
 
-                                var dgs = self.getControls(DRAGGABLE_PREFIX);
-                                _.each(dgs, function(dg) {
-                                    dg.setVisible(false);
-                                });
-                                var maxPlaced = _.max(dzs, function(dz) { return dz.placed }).placed;
-                                _.each(dzs, function(dz, i) {
-                                    dz.area.clear();
-                                    dz.area.drawPoly(bl.PolyRectMake(0, 2, 120, dz.placed * spaceHeight), colours[i], 2, cc.c4f(0,0,0,1));
-                                    dz.showArea();
-                                });
 
-                                // add y axis
-                                self.yAxis = new BLDrawNode();
-                                self.yAxis.setZOrder(1);
-                                self.addChild(self.yAxis);
-                                self.yAxis.drawPoly(bl.PolyRectMake(115, 145, 0, 610), cc.c4f(0,0,0,1), 3, cc.c4f(0,0,0,1));
+                                var action = cc.Sequence.create(cc.FadeIn.create(1.0));
 
-                                _.times(maxCards + 1, function (i) {
-                                    self.yAxis.drawPoly(bl.PolyRectMake(95, 145 + i * spaceHeight, 20, 0), cc.c4f(0,0,0,1), 3, cc.c4f(0,0,0,1));
-                                    var label = cc.LabelTTF.create(i, "mikadoBold", 20);
-                                    self.addChild(label);
-                                    label.setPosition(cc.p(75, 145 + i * spaceHeight))
-                                });
+                                // show bar chart button
+                                this._barChartButton = new BlButton.create('barchart_button')
+                                this._barChartButton.setMargins(0, 0);
+                                this._barChartButton.setPosition(cc.p(60, 60));
+                                this._barChartButton.onTouchUp(function (postion, btn) {
+
+                                    btn.setEnabled(false);
+                                    
+                                    var dgs = self.getControls(DRAGGABLE_PREFIX);
+                                    _.each(dgs, function(dg) {
+                                        dg.setVisible(false);
+                                    });
+                                    var maxPlaced = _.max(dzs, function(dz) { return dz.placed }).placed;
+                                    _.each(dzs, function(dz, i) {
+                                        dz.area.clear();
+                                        dz.area.drawPoly(bl.PolyRectMake(0, 2, 120, dz.placed * spaceHeight), colours[i], 2, cc.c4f(0,0,0,1));
+                                        dz.showArea();
+                                    });
+
+                                    // add y axis
+                                    self.yAxis = new BLDrawNode();
+                                    self.yAxis.setZOrder(1);
+                                    self.addChild(self.yAxis);
+                                    self.yAxis.drawPoly(bl.PolyRectMake(115, 145, 0, 610), cc.c4f(0,0,0,1), 3, cc.c4f(0,0,0,1));
+
+                                    _.times(maxCards + 1, function (i) {
+                                        self.yAxis.drawPoly(bl.PolyRectMake(95, 145 + i * spaceHeight, 20, 0), cc.c4f(0,0,0,1), 3, cc.c4f(0,0,0,1));
+                                        var label = cc.LabelTTF.create(i, "mikadoBold", 20);
+                                        self.addChild(label);
+                                        label.setPosition(cc.p(75, 145 + i * spaceHeight))
+                                    });
+                                })
+                                self.addChild(this._barChartButton, 10);
+                                
+                                this._barChartButton.runAction(action);
+
                             }
                         }
                     });
