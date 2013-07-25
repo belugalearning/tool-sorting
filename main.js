@@ -301,6 +301,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                 this._barChartButton.setPosition(cc.p(60, 60));
                                 this._barChartButton.onTouchUp(function (postion, btn) {
 
+                                    btn.setOpacity(255/2);
                                     btn.setEnabled(false);
                                     
                                     var dgs = self.getControls(DRAGGABLE_PREFIX);
@@ -328,7 +329,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                     });
                                 })
                                 self.addChild(this._barChartButton, 10);
-                                
+
                                 this._barChartButton.runAction(action);
 
                             }
