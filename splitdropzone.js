@@ -23,7 +23,7 @@ define(['cocos2d', 'bldrawnode', 'underscore', 'dropzone'], function (cc, BLDraw
             var size = {};
             if (_.isArray(shape)) {
                 this.negationArea.vertices = shape;
-                this.negationArea.drawPoly(shape, cc.c4f(255, 0, 0, 0.2), 1, cc.c4f(255,0,0,0.2));
+                this.negationArea.drawPoly(shape, cc.c4FFromccc4B(cc.c4b(35, 35, 35, 50)), 1, cc.c4FFromccc4B(cc.c4b(35,35,35,50)));
                 size = this._getPolySize(shape);
                 this.setContentSize(size);
             }

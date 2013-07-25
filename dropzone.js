@@ -39,7 +39,7 @@ define(['cocos2d', 'bldrawnode', 'underscore'], function (cc, BLDrawNode, _) {
 
             if (_.isArray(shape)) {
                 this.area.vertices = shape;
-                this.area.drawPoly(shape, cc.c4f(35, 35, 35, 0.2), 1, cc.c4f(35,35,35,0.2));
+                this.area.drawPoly(shape, cc.c4FFromccc4B(cc.c4b(35, 35, 35, 50)), 1, cc.c4FFromccc4B(cc.c4b(35,35,35,50)));
                 size = this._getPolySize(shape);
                 this.setContentSize(size);
             }
