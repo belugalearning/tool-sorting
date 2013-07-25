@@ -250,7 +250,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 
                 for (var i = 0; i < setLength; i++) {
                     var dz = this.addDropZone({
-                        x:140 + (i * 155), y:145},
+                        x:140 + (i * 155), y:149},
                         [{x:0, y:0}, {x:0, y:600}, {x:120, y:600}, {x:120, y:0}],
                         question.symbols.sets['set' + i].label,
                         question.symbols.sets['set' + i].definitionURL);
