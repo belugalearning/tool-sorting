@@ -390,6 +390,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 self._totalLabels[3].setAnchorPoint(cc.p(0.5, 0.5));
                 self.addChild(self._totalLabels[3]);
 
+                self._totalLabels[4] = cc.LabelTTF.create('0', "mikadoBold", 30);
+                self._totalLabels[4].setPosition(cc.p(720, 150));
+                self._totalLabels[4].setZOrder(LABEL_Z);
+                self._totalLabels[4].setAnchorPoint(cc.p(0.5, 0.5));
+                self.addChild(self._totalLabels[4]);
+
 
                 // add draggables
 
@@ -493,6 +499,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                 self._totalLabels[1].setString(sub_totals[2] + sub_totals[3]);
                                 self._totalLabels[2].setString(sub_totals[0] + sub_totals[1]);
                                 self._totalLabels[3].setString(sub_totals[1] + sub_totals[2]);
+                                var cumulative = 0;
+                                var sums = _.map(sub_totals,function(num) {
+                                    cumulative += num;
+                                    return cumulative;
+                                });
+                                self._totalLabels[4].setString(sums[sums.length - 1]);
 
                             }
                         }
