@@ -49,8 +49,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
         },
 
         reset: function () {
-            this._background = undefined;
-            this._backgroundLayer = undefined;
             this._draggableCounter = 0;
             this._draggableLayer = undefined;
             this._prevDraggable = undefined;
