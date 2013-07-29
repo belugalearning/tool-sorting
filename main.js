@@ -286,6 +286,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                             });
                         } else {
                             placed++;
+                            draggable.setTouchEnabled(false);
                             draggable.setRotation(_.random(-10, 10));
                             draggable.setPosition(cc.p(inclusive[0].getPosition().x + 60, inclusive[0].getPosition().y + (inclusive[0].placed * 100) - 50));
                             if (placed >= setMemberLength) {
@@ -331,6 +332,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                 this._barChartButton.runAction(action);
 
                             }
+
                         }
                     });
                 });
