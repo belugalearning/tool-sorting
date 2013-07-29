@@ -290,9 +290,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                             draggable.setRotation(_.random(-10, 10));
                             draggable.setPosition(cc.p(inclusive[0].getPosition().x + 60, inclusive[0].getPosition().y + (inclusive[0].placed * 100) - 50));
                             if (placed >= setMemberLength) {
-
-
-                                var action = cc.Sequence.create(cc.FadeIn.create(1.0));
+                                var action = bl.animation.popIn();
 
                                 // show bar chart button
                                 this._barChartButton = new BlButton.create('barchart_button')
