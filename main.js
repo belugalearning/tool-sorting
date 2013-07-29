@@ -1,6 +1,5 @@
 require.config({
     paths: {
-        'dropzone': '../../tools/sorting/dropzone',
         'circulardropzone': '../../tools/sorting/circulardropzone',
         'splitdropzone': '../../tools/sorting/splitdropzone'
     }
