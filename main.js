@@ -503,14 +503,13 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                 var rotation = _.random(-10, 10);
                                 draggable.setRotation(rotation);
 
-                                var sub_totals = {};
+                                var sub_totals = [0,0,0,0];
                                 var totals = {};
                                 var dgs = self.getControls(DRAGGABLE_PREFIX);
 
                                 // update sub_totals
-                                _.each(dgs, function (dg) {
-                                    _.each(spots, function (spot, i) {
-                                        sub_totals[i] = sub_totals[i] || 0;
+                                _.each(spots, function (spot, i) {
+                                    _.each(dgs, function (dg, j) {
                                         if (dg.getPosition().x === spot.x && dg.getPosition().y === spot.y) {
                                             sub_totals[i] += 1;
                                         }
@@ -536,8 +535,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
                                 self._totalLabels[0].setString(sub_totals[0] + sub_totals[1]);
                                 self._totalLabels[1].setString(sub_totals[2] + sub_totals[3]);
-                                self._totalLabels[2].setString(sub_totals[0] + sub_totals[1]);
-                                self._totalLabels[3].setString(sub_totals[1] + sub_totals[2]);
+                                self._totalLabels[2].setString(sub_totals[0] + sub_totals[2]);
+                                self._totalLabels[3].setString(sub_totals[1] + sub_totals[3]);
                                 var cumulative = 0;
                                 var sums = _.map(sub_totals,function(num) {
                                     cumulative += num;
