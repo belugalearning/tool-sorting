@@ -60,7 +60,7 @@ define(['cocos2d', 'bldrawnode', 'underscore'], function (cc, BLDrawNode, _) {
             this._label.setPosition(cc.p(this.getContentSize().width / 2, this.getContentSize().height / 2));
         },
 
-        isPointInsideArea: function (point) {
+        containsPoint: function (point) {
             return window.bl.isPointInsideArea(point, this.area.vertices, this.getPosition());
         },
 

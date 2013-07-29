@@ -75,7 +75,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 _.each(dzs, function(dz) {
                     // todo check center point of draggable, not touch point
                     //
-                    if (dz.isPointInsideArea(position)) {
+                    if (dz.containsPoint(position)) {
                         dz.showArea();
                     } else {
                         dz.hideArea();
@@ -92,7 +92,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 var inclusive = [];
                 var exclusive = [];
                 _.each(dzs, function(dz) {
-                    if (dz.isPointInsideArea(position)) {
+                    if (dz.containsPoint(position)) {
                         dz.findPositionFor(draggable);
                         inclusive.push(dz);
                     } else {
@@ -269,7 +269,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         var inclusive = [];
                         var exclusive = [];
                         _.each(dzs, function(dz) {
-                            if (dz.isPointInsideArea(position)) {
+                            if (dz.containsPoint(position)) {
                                 dz.findPositionFor(draggable);
                                 inclusive.push(dz);
                                 dz.placed = dz.placed || 0;
@@ -438,13 +438,13 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                             _.each(dzs, function(dz) {
                                 // todo check center point of draggable, not touch point
                                 //
-                                if (dz.isPointInsideArea(position)) {
+                                if (dz.containsPoint(position)) {
                                     dz.showArea();
                                     dz.hideNegationArea();
                                 } else {
                                     dz.hideArea();
 
-                                    if (dz.isPointInsideNegationArea(position)) {
+                                    if (dz.negationAreaContainsPoint(position)) {
                                         dz.showNegationArea();
                                     } else {
                                         dz.hideNegationArea();
@@ -470,9 +470,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                             var inclusive = [];
                             var exclusive = [];
                             _.each(dzs, function(dz) {
-                                if (dz.isPointInsideArea(position)) {
+                                if (dz.containsPoint(position)) {
                                     inclusive.push(dz);
-                                } else if (dz.isPointInsideNegationArea(position)) {
+                                } else if (dz.negationAreaContainsPoint(position)) {
                                     exclusive.push(dz);
                                 } 
                                 dz.hideArea();

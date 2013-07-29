@@ -74,11 +74,11 @@ define(['cocos2d', 'bldrawnode', 'underscore', 'dropzone'], function (cc, BLDraw
             this._negationLabel.setPosition(cc.p(this.getContentSize().width / 2, this.getContentSize().height / 2));
         },
 
-        isPointInsideArea: function (point) {
+        containsPoint: function (point) {
             return bl.isPointInsideArea(point, this.area.vertices, this.getPosition());
         },
 
-        isPointInsideNegationArea: function (point) {
+        negationAreaContainsPoint: function (point) {
             return bl.isPointInsideArea(point, this.negationArea.vertices, this.getPosition());
         },
 
