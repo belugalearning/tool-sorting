@@ -21,7 +21,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
     var TABLE_DIAGRAM = 'table';
     var BOXES_DIAGRAM = 'boxes';
 
-    window.toolTag = 'sorting';
+    window.bl.toolTag = 'sorting';
     var Tool = ToolLayer.extend({
 
         _windowSize: undefined,
