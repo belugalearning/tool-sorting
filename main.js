@@ -118,7 +118,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             } else {
                 dg.initWithFile(resource);
             }
-            dg.setPosition(position.x, position.y);
+            dg.setPosition(position);
             dg.onMoved(onMoved);
             dg.onMoveEnded(onMoveEnded);
             this._draggableLayer.addChild(dg);
