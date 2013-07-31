@@ -249,7 +249,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 
                 for (var i = 0; i < setLength; i++) {
                     var dz = this.addDropZone({
-                        x:140 + (i * 155), y:146},
+                        x:140 + (i * 155), y:153},
                         bl.PolyRectMake(0, 0, 120, 600),
                         question.symbols.sets['set' + i].label,
                         question.symbols.sets['set' + i].definitionURL);
@@ -308,7 +308,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                     var maxPlaced = _.max(dzs, function(dz) { return dz.placed }).placed;
                                     _.each(dzs, function(dz, i) {
                                         dz.area.clear();
-                                        dz.area.drawPoly(bl.PolyRectMake(0, 2, 120, dz.placed * spaceHeight), colours[i], 2, cc.c4f(1,2,1,1));
+                                        dz.area.drawPoly(bl.PolyRectMake(0, -4, 120, dz.placed * spaceHeight), colours[i], 2, cc.c4f(1,2,1,1));
                                         dz.showArea();
                                     });
 
