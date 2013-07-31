@@ -227,6 +227,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             var self = this;
 
             this._super(question);
+            this.setBackground(window.bl.getResource('deep_water_background'));
+            this.addBackgroundComponent(window.bl.getResource('dock'), cc.p(this._windowSize.width / 2, 40))
 
             var setLength = 0, key;
             for (key in question.symbols.sets) {
@@ -243,12 +245,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
             if (question.toolMode === BAR_CHART) {
 
-                this.setBackground(window.bl.getResource('barchart_base'));
+                this.addBackgroundComponent(window.bl.getResource('x_axis'), cc.p(this._windowSize.width / 2, 145));
                 
                 for (var i = 0; i < setLength; i++) {
                     var dz = this.addDropZone({
-                        x:140 + (i * 155), y:144},
-                        [{x:0, y:0}, {x:0, y:600}, {x:120, y:600}, {x:120, y:0}],
+                        x:140 + (i * 155), y:146},
+                        bl.PolyRectMake(0, 0, 120, 600),
                         question.symbols.sets['set' + i].label,
                         question.symbols.sets['set' + i].definitionURL);
                     dz._label.setPosition(60, -20);
@@ -292,9 +294,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                 var action = bl.animation.popIn();
 
                                 // show bar chart button
-                                this._barChartButton = new BlButton.create('barchart_button')
-                                this._barChartButton.setMargins(0, 0);
-                                this._barChartButton.setPosition(cc.p(60, 60));
+                                this._barChartButton = new BlButton.create(bl.getResource('barchart_button'));
+                                this._barChartButton.setPosition(cc.p(100, 100));
                                 this._barChartButton.onTouchUp(function (postion, btn) {
 
                                     btn.setOpacity(255/2);
@@ -307,7 +308,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                     var maxPlaced = _.max(dzs, function(dz) { return dz.placed }).placed;
                                     _.each(dzs, function(dz, i) {
                                         dz.area.clear();
-                                        dz.area.drawPoly(bl.PolyRectMake(0, 2, 120, dz.placed * spaceHeight), colours[i], 2, cc.c4f(0,0,0,1));
+                                        dz.area.drawPoly(bl.PolyRectMake(0, 2, 120, dz.placed * spaceHeight), colours[i], 2, cc.c4f(1,2,1,1));
                                         dz.showArea();
                                     });
 
@@ -315,18 +316,19 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                     self.yAxis = new BLDrawNode();
                                     self.yAxis.setZOrder(1);
                                     self.addChild(self.yAxis);
-                                    self.yAxis.drawPoly(bl.PolyRectMake(115, 145, 0, 610), cc.c4f(0,0,0,1), 3, cc.c4f(0,0,0,1));
+                                    self.yAxis.drawPoly(bl.PolyRectMake(115, 145, 0, 610), cc.c4f(1,1,1,1), 3, cc.c4f(1,1,1,1));
 
                                     _.times(maxCards + 1, function (i) {
-                                        self.yAxis.drawPoly(bl.PolyRectMake(95, 145 + i * spaceHeight, 20, 0), cc.c4f(0,0,0,1), 3, cc.c4f(0,0,0,1));
+                                        self.yAxis.drawPoly(bl.PolyRectMake(95, 148 + i * spaceHeight, 20, 0), cc.c4f(1,1,1,1), 3, cc.c4f(1,1,1,1));
                                         var label = cc.LabelTTF.create(i, "mikadoBold", 20);
+                                        label.setColor(cc.c3b(255,255,255));
                                         self.addChild(label);
-                                        label.setPosition(cc.p(75, 145 + i * spaceHeight))
+                                        label.setPosition(cc.p(75, 148 + i * spaceHeight))
                                     });
                                 })
-                                self.addChild(this._barChartButton, 10);
 
                                 this._barChartButton.runAction(action);
+                                self.addChild(this._barChartButton, 10);
 
                             }
 
@@ -336,7 +338,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
             } else if (question.toolMode === BOXES_DIAGRAM) {
 
-                this.setBackground(window.bl.getResource('boxes_base'));
+                this.addBackgroundComponent(window.bl.getResource('sorting_boxes'), cc.p(this._windowSize.width / 2, (this._windowSize.height / 2)))
 
                 _.each(members, function (creature, k) {
                     var sprite = new StackedSprite();
@@ -346,68 +348,79 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
             } else if (question.toolMode === TABLE_DIAGRAM) {
 
-                this.setBackground(window.bl.getResource('table_base'));
-
+                this.addBackgroundComponent(window.bl.getResource('table_frame'), cc.p(this._windowSize.width / 2, (this._windowSize.height / 2) + 40));
+                
                 // setup dropzones
 
-                var dz = this.addSplitDropZone(cc.p(370,205), bl.PolyRectMake(0,130,280,130), bl.PolyRectMake(0,0,280,130), question.symbols.sets.set0.label, question.symbols.sets.set0.negationLabel, question.symbols.sets.set0.definitionURL);
-                dz._label.setPosition(-20, 195);
+                var table_pos = cc.p(344, 260);
+
+                var area_side = 164;
+                var bar_width = 5;
+                var label_gap = 20;
+
+                var rect_h_width = area_side * 2 + bar_width;
+                var rect_h_height = area_side;
+
+                var dz = this.addSplitDropZone(table_pos, bl.PolyRectMake(0, rect_h_height, rect_h_width, rect_h_height), bl.PolyRectMake(0, 0, rect_h_width, rect_h_height), question.symbols.sets.set0.label, question.symbols.sets.set0.negationLabel, question.symbols.sets.set0.definitionURL);
+                dz._label.setPosition(-label_gap, 1.5 * (area_side + bar_width));
                 dz._label.setFontSize(20);
-                dz._negationLabel.setPosition(-20, 65);
+                dz._negationLabel.setPosition(-label_gap, 0.5 * (area_side));
                 dz._negationLabel.setFontSize(20);
 
-                dz = this.addSplitDropZone(cc.p(370,207), bl.PolyRectMake(0,0,140,255), bl.PolyRectMake(140,0,140,255), question.symbols.sets.set1.label, question.symbols.sets.set1.negationLabel, question.symbols.sets.set1.definitionURL);
-                dz._label.setPosition(90, 280);
-                dz._label.setRotation(-90);
-                dz._label.setFontSize(20);
+                dz = this.addSplitDropZone(table_pos, bl.PolyRectMake(0, 0, rect_h_height, rect_h_width), bl.PolyRectMake(rect_h_height, 0, rect_h_height, rect_h_width), question.symbols.sets.set1.label, question.symbols.sets.set1.negationLabel, question.symbols.sets.set1.definitionURL);
+                dz._label.setPosition(0.25 * area_side, 2 * (area_side + bar_width) + label_gap);
+                dz._label.setRotation(-45);
+                dz._label.setFontSize(label_gap);
                 dz._label.setAnchorPoint(cc.p(0, 0));
-                dz._negationLabel.setPosition(225, 280);
-                dz._negationLabel.setRotation(-90);
-                dz._negationLabel.setFontSize(20);
+                dz._negationLabel.setPosition(1.25 * (area_side + bar_width), 2 * (area_side + bar_width) + label_gap);
+                dz._negationLabel.setRotation(-45);
+                dz._negationLabel.setFontSize(label_gap);
                 dz._negationLabel.setAnchorPoint(cc.p(0, 0));
 
                 // add totals
 
                 self._totalLabels[0] = cc.LabelTTF.create('0', "mikadoBold", 30);
-                self._totalLabels[0].setPosition(cc.p(720, 400));
+                self._totalLabels[0].setPosition(cc.p(table_pos.x + (2.5 * (area_side + bar_width)), table_pos.y + (area_side * 1.5 + bar_width)));
                 self._totalLabels[0].setZOrder(LABEL_Z);
                 self._totalLabels[0].setAnchorPoint(cc.p(0.5, 0.5));
                 self.addChild(self._totalLabels[0]);
 
                 self._totalLabels[1] = cc.LabelTTF.create('0', "mikadoBold", 30);
-                self._totalLabels[1].setPosition(cc.p(720, 265));
+                self._totalLabels[1].setPosition(cc.p(table_pos.x + (2.5 * (area_side + bar_width)), table_pos.y + (area_side * 0.5 + bar_width)));
                 self._totalLabels[1].setZOrder(LABEL_Z);
                 self._totalLabels[1].setAnchorPoint(cc.p(0.5, 0.5));
                 self.addChild(self._totalLabels[1]);
 
                 self._totalLabels[2] = cc.LabelTTF.create('0', "mikadoBold", 30);
-                self._totalLabels[2].setPosition(cc.p(440, 150));
+                self._totalLabels[2].setPosition(cc.p(table_pos.x + 0.5 * area_side, table_pos.y - 0.5 * area_side));
                 self._totalLabels[2].setZOrder(LABEL_Z);
                 self._totalLabels[2].setAnchorPoint(cc.p(0.5, 0.5));
                 self.addChild(self._totalLabels[2]);
 
                 self._totalLabels[3] = cc.LabelTTF.create('0', "mikadoBold", 30);
-                self._totalLabels[3].setPosition(cc.p(580, 150));
+                self._totalLabels[3].setPosition(cc.p(580, table_pos.y - 0.5 * area_side));
                 self._totalLabels[3].setZOrder(LABEL_Z);
                 self._totalLabels[3].setAnchorPoint(cc.p(0.5, 0.5));
                 self.addChild(self._totalLabels[3]);
 
                 self._totalLabels[4] = cc.LabelTTF.create('0', "mikadoBold", 30);
-                self._totalLabels[4].setPosition(cc.p(720, 150));
+                self._totalLabels[4].setPosition(cc.p(table_pos.x + (2.5 * (area_side + bar_width)), table_pos.y - 0.5 * area_side));
                 self._totalLabels[4].setZOrder(LABEL_Z);
                 self._totalLabels[4].setAnchorPoint(cc.p(0.5, 0.5));
                 self.addChild(self._totalLabels[4]);
 
 
                 var visible_areas = [];
+                var drop_spots = [];
                 _.times(2, function (row) {
                     _.times(2, function (col) {
 
                         var a = new BLDrawNode();
+                        var pos = cc.p(table_pos.x + (row * (area_side + bar_width)), table_pos.y + (col * (area_side + bar_width)));
                         a.setZOrder(1);
                         a.setVisible(false);
-                        a.setPosition(cc.p(370 + row * 140,205 + col * 130))
-                        var v = bl.PolyRectMake(0,0,140,130);
+                        a.setPosition(pos)
+                        var v = bl.PolyRectMake(0, 0, area_side, area_side);
                         a.vertices = v;
                         a.drawPoly(v, cc.c4FFromccc4B(cc.c4b(35, 35, 35, 50)), 1, cc.c4FFromccc4B(cc.c4b(35,35,35,50)));
                         
@@ -415,6 +428,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
                         visible_areas.push(a);
 
+                        var x_max = _.max(v, function (x) { return x.x; }).x;
+                        var y_max = _.max(v, function (x) { return x.y; }).y;
+                        drop_spots.push(cc.p(pos.x + x_max * 0.5, pos.y + y_max * 0.5));
 
                     });
                 });
@@ -485,20 +501,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                             if (inclusive.length + exclusive.length < 2 || !self.checkValid(draggable, inclusive, exclusive)) {
                                 draggable.returnToLastPosition();
                             } else {
-                                var spots = [cc.p(440, 400), cc.p(580, 400), cc.p(580, 265), cc.p(440, 265)];
-                                var distance = 9999999 * 99999999;
-                                var index = 0;
-                                _.each(spots, function (spot, i) {
-                                    var x = Math.abs(position.x - spot.x);
-                                    var y = Math.abs(position.y - spot.y);
-                                    var distanceSq = Math.min(x * x + y * y, distance);
-                                    if (distanceSq < distance) {
-                                        distance = distanceSq;
-                                        index = i;
-                                    }
-                                });
+                                var nearest_spot = window.bl.getClosestPoint(position, drop_spots);
 
-                                draggable.setPosition(spots[index]);
+                                draggable.setPosition(nearest_spot);
                                 var rotation = _.random(-10, 10);
                                 draggable.setRotation(rotation);
 
@@ -507,29 +512,32 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                 var dgs = self.getControls(DRAGGABLE_PREFIX);
 
                                 // update sub_totals
-                                _.each(spots, function (spot, i) {
+                                var updated_sub_total_index = 0;
+                                _.each(drop_spots, function (spot, i) {
                                     _.each(dgs, function (dg, j) {
                                         if (dg.getPosition().x === spot.x && dg.getPosition().y === spot.y) {
                                             sub_totals[i] += 1;
+                                            updated_sub_total_index = i;
+                                            return;
                                         }
                                     });
                                 });
 
-                                _.each(sub_totals, function (v, k) {
+                                _.each(sub_totals, function (v, i) {
                                     var str = 'x' + v;
-                                    if (_.isUndefined(self._subTotalLabels[k])) {
-                                        self._subTotalLabels[k] =  cc.LabelTTF.create(str, "mikadoBold", 12);
-                                        self._subTotalLabels[k].setPosition(cc.p(spots[k].x + 15, spots[k].y + 20));
-                                        self._subTotalLabels[k].setZOrder(500);
-                                        self._subTotalLabels[k].setColor(cc.c3b(224,161,40));
-                                        self._subTotalLabels[k].setAnchorPoint(cc.p(0, 0));
-                                        self.addChild(self._subTotalLabels[k]);
+                                    if (_.isUndefined(self._subTotalLabels[i])) {
+                                        self._subTotalLabels[i] =  cc.LabelTTF.create(str, "mikadoBold", 12);
+                                        self._subTotalLabels[i].setPosition(cc.p(drop_spots[i].x + 15, drop_spots[i].y + 20));
+                                        self._subTotalLabels[i].setZOrder(500);
+                                        self._subTotalLabels[i].setColor(cc.c3b(224,161,40));
+                                        self._subTotalLabels[i].setAnchorPoint(cc.p(0, 0));
+                                        self.addChild(self._subTotalLabels[i]);
                                     }
-                                    self._subTotalLabels[k].setVisible(v > 0);
-                                    if (self._subTotalLabels[k].getString() !== str) {
-                                        self._subTotalLabels[k].setRotation(rotation);
+                                    self._subTotalLabels[i].setVisible(v > 0);
+                                    if (i == updated_sub_total_index) {
+                                        self._subTotalLabels[i].setRotation(rotation);
                                     }
-                                    self._subTotalLabels[k].setString(str);
+                                    self._subTotalLabels[i].setString(str);
                                 });
 
                                 self._totalLabels[0].setString(sub_totals[0] + sub_totals[1]);
@@ -550,24 +558,26 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
             } else if (question.toolMode === VENN_DIAGRAM) {
 
-                this.setBackground(window.bl.getResource('venn_base'));
+                this.addBackgroundComponent(window.bl.getResource('dock'), cc.p(this._windowSize.width / 2, 40))
+                this.addBackgroundComponent(window.bl.getResource('venn_diagram_3_colour'), cc.p(this._windowSize.width / 2, (this._windowSize.height / 2) + 30))
                 
+                var radius = 198;
                 var circles = [
                     {
-                        r: 175,
-                        p: cc.p(243, 110),
+                        r: radius,
+                        p: cc.p(208, 129),
                         label: question.symbols.sets.set0.label,
                         definitionURL: question.symbols.sets.set0.definitionURL
                     },
                     {
-                        r: 175,
-                        p: cc.p(427, 110),
+                        r: radius,
+                        p: cc.p(416, 129),
                         label: question.symbols.sets.set1.label,
                         definitionURL: question.symbols.sets.set1.definitionURL
                     },
                     {
-                        r: 175,
-                        p: cc.p(335, 265),
+                        r: radius,
+                        p: cc.p(this._windowSize.width / 2 - (radius + 2), (this._windowSize.height / 2) - 78),
                         label: question.symbols.sets.set2.label,
                         definitionURL: question.symbols.sets.set2.definitionURL
                     }
@@ -610,7 +620,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         dz._label.setRotation(-45);
                         dz._label.setPosition(cc.p(dz.getContentSize().width * 1, dz.getContentSize().height * -0.0001));
                     } else if (i === 2) {
-                        dz._label.setPosition(cc.p(dz.getContentSize().width * 0.5, dz.getContentSize().height * 1.2));
+                        dz._label.setPosition(cc.p(dz.getContentSize().width * 0.5, dz.getContentSize().height * 1.1));
                     }
 
                 });
@@ -618,7 +628,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 _.each(members, function (creature, k) {
                     var sprite = new StackedSprite();
                     sprite.setup({ layers: creature.sprite });
-                    self.addDraggable({x:510, y:60}, sprite, creature.definitionURL);
+                    self.addDraggable({x:self._windowSize.width / 2, y:60}, sprite, creature.definitionURL);
                 });
 
             }
