@@ -111,6 +111,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 this.addChild(this._draggableLayer, DRAGGABLE_Z);
             }
             var dg = new Draggable();
+            // Set the default anchor point
             dg.definitionURL = definitionURL;
             dg.tag = 'dg-' + this._draggableCounter;
             if (typeof resource === 'object') {
@@ -377,8 +378,20 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 dz._negationLabel.setFontSize(label_gap);
                 dz._negationLabel.setAnchorPoint(cc.p(0, 0));
 
-                // add totals
 
+                var total_left = cc.LabelTTF.create('TOTAL', "mikadoBold", 20);
+                total_left.setPosition(cc.p(table_pos.x - label_gap - bar_width, table_pos.y - (area_side * 0.5 + bar_width)));
+                total_left.setZOrder(LABEL_Z);
+                total_left.setAnchorPoint(cc.p(1, 0.5));
+                self.addChild(total_left);
+
+                var total_top = cc.LabelTTF.create('TOTAL', "mikadoBold", 20);
+                total_top.setPosition(cc.p(table_pos.x + (2.5 * (area_side + bar_width)), table_pos.y + (area_side * 2.5 + bar_width) - label_gap));
+                total_top.setZOrder(LABEL_Z);
+                total_top.setAnchorPoint(cc.p(0.5, 0.5));
+                self.addChild(total_top);
+
+                // add totals
                 self._totalLabels[0] = cc.LabelTTF.create('0', "mikadoBold", 30);
                 self._totalLabels[0].setPosition(cc.p(table_pos.x + (2.5 * (area_side + bar_width)), table_pos.y + (area_side * 1.5 + bar_width)));
                 self._totalLabels[0].setZOrder(LABEL_Z);
