@@ -369,12 +369,16 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 dz._negationLabel.setFontSize(20);
 
                 dz = this.addSplitDropZone(table_pos, bl.PolyRectMake(0, 0, rect_h_height, rect_h_width), bl.PolyRectMake(rect_h_height, 0, rect_h_height, rect_h_width), question.symbols.sets.set1.label, question.symbols.sets.set1.negationLabel, question.symbols.sets.set1.definitionURL);
-                dz._label.setPosition(0.25 * area_side, 2 * (area_side + bar_width) + label_gap);
-                dz._label.setRotation(-45);
+                dz._label.setPosition(label_gap, 2 * (area_side + bar_width) + label_gap);
+                dz._label.setDimensions(cc.SizeMake(120, 80));
+                dz._label.setHorizontalAlignment(cc.TEXT_ALIGNMENT_CENTER);
+                dz._label.setVerticalAlignment(cc.TEXT_ALIGNMENT_CENTER);
                 dz._label.setFontSize(label_gap);
                 dz._label.setAnchorPoint(cc.p(0, 0));
-                dz._negationLabel.setPosition(1.25 * (area_side + bar_width), 2 * (area_side + bar_width) + label_gap);
-                dz._negationLabel.setRotation(-45);
+                dz._negationLabel.setPosition(1 * (area_side + bar_width) + label_gap, 2 * (area_side + bar_width) + label_gap);
+                dz._negationLabel.setDimensions(cc.SizeMake(120, 80));
+                dz._negationLabel.setHorizontalAlignment(cc.TEXT_ALIGNMENT_CENTER);
+                dz._negationLabel.setVerticalAlignment(cc.TEXT_ALIGNMENT_CENTER);
                 dz._negationLabel.setFontSize(label_gap);
                 dz._negationLabel.setAnchorPoint(cc.p(0, 0));
 
