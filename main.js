@@ -539,7 +539,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                 _.each(sub_totals, function (v, i) {
                                     var str = 'x' + v;
                                     if (_.isUndefined(self._subTotalLabels[i])) {
-                                        self._subTotalLabels[i] =  cc.LabelTTF.create(str, "mikadoBold", 12);
+                                        self._subTotalLabels[i] = cc.LabelTTF.create(str, "mikadoBold", 12);
                                         self._subTotalLabels[i].setPosition(cc.p(drop_spots[i].x + 15, drop_spots[i].y + 20));
                                         self._subTotalLabels[i].setZOrder(500);
                                         self._subTotalLabels[i].setColor(cc.c3b(224,161,40));
@@ -553,10 +553,10 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                     self._subTotalLabels[i].setString(str);
                                 });
 
-                                self._totalLabels[0].setString(sub_totals[0] + sub_totals[1]);
-                                self._totalLabels[1].setString(sub_totals[2] + sub_totals[3]);
-                                self._totalLabels[2].setString(sub_totals[0] + sub_totals[2]);
-                                self._totalLabels[3].setString(sub_totals[1] + sub_totals[3]);
+                                self._totalLabels[0].setString(sub_totals[1] + sub_totals[3]);
+                                self._totalLabels[1].setString(sub_totals[0] + sub_totals[2]);
+                                self._totalLabels[2].setString(sub_totals[1] + sub_totals[0]);
+                                self._totalLabels[3].setString(sub_totals[3] + sub_totals[2]);
                                 var cumulative = 0;
                                 var sums = _.map(sub_totals,function(num) {
                                     cumulative += num;
