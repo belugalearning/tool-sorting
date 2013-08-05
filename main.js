@@ -43,7 +43,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 setCategory:'creature',
                 numSets:3
               })
-            )
+            );
             return this;
         },
 
@@ -51,7 +51,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             this._draggableCounter = 0;
             this._draggableLayer = undefined;
             this._prevDraggable = undefined;
-            this._barChartButton = undefined,
+            this._barChartButton = undefined;
             this._dropzoneCounter = 0;
             this._totalLabels = [];
             this._subTotalLabels = [];
@@ -229,14 +229,14 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
             this._super(question);
             this.setBackground(window.bl.getResource('deep_water_background'));
-            this.addBackgroundComponent(window.bl.getResource('dock'), cc.p(this._windowSize.width / 2, 40))
+            this.addBackgroundComponent(window.bl.getResource('dock'), cc.p(this._windowSize.width / 2, 40));
 
             var setLength = 0, key;
             for (key in question.symbols.sets) {
                 if (question.symbols.sets.hasOwnProperty(key)) setLength++;
             }
 
-            var setMemberLength = 0, key;
+            var setMemberLength = 0;
             for (key in question.symbols.set_members) {
                 if (question.symbols.set_members.hasOwnProperty(key)) setMemberLength++;
             }
@@ -306,7 +306,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                     _.each(dgs, function(dg) {
                                         dg.setVisible(false);
                                     });
-                                    var maxPlaced = _.max(dzs, function(dz) { return dz.placed }).placed;
+                                    var maxPlaced = _.max(dzs, function(dz) { return dz.placed; }).placed;
                                     _.each(dzs, function(dz, i) {
                                         dz.area.clear();
                                         dz.area.drawPoly(bl.PolyRectMake(0, -4, 120, dz.placed * spaceHeight), colours[i], 2, cc.c4f(1,2,1,1));
@@ -324,9 +324,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                         var label = cc.LabelTTF.create(i, "mikadoBold", 20);
                                         label.setColor(cc.c3b(255,255,255));
                                         self.addChild(label);
-                                        label.setPosition(cc.p(75, 148 + i * spaceHeight))
+                                        label.setPosition(cc.p(75, 148 + i * spaceHeight));
                                     });
-                                })
+                                });
 
                                 this._barChartButton.runAction(action);
                                 self.addChild(this._barChartButton, 10);
@@ -339,7 +339,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
             } else if (question.toolMode === BOXES_DIAGRAM) {
 
-                this.addBackgroundComponent(window.bl.getResource('sorting_boxes'), cc.p(this._windowSize.width / 2, (this._windowSize.height / 2)))
+                this.addBackgroundComponent(window.bl.getResource('sorting_boxes'), cc.p(this._windowSize.width / 2, (this._windowSize.height / 2)));
 
                 _.each(members, function (creature, k) {
                     var sprite = new StackedSprite();
@@ -436,7 +436,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         var pos = cc.p(table_pos.x + (row * (area_side + bar_width)), table_pos.y + (col * (area_side + bar_width)));
                         a.setZOrder(1);
                         a.setVisible(false);
-                        a.setPosition(pos)
+                        a.setPosition(pos);
                         var v = bl.PolyRectMake(0, 0, area_side, area_side);
                         a.vertices = v;
                         a.drawPoly(v, cc.c4FFromccc4B(cc.c4b(35, 35, 35, 50)), 1, cc.c4FFromccc4B(cc.c4b(35,35,35,50)));
@@ -488,9 +488,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                 if (bl.isPointInsideArea(position, a.vertices, a.getPosition())) {
                                     a.setVisible(true);
                                 } else {
-                                    a.setVisible(false);                                    
+                                    a.setVisible(false);
                                 }
-                            })
+                            });
 
                             if (self._prevDraggable !== draggable.tag) {
                                 self._draggableCounter++;
@@ -506,7 +506,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                     inclusive.push(dz);
                                 } else if (dz.negationAreaContainsPoint(position)) {
                                     exclusive.push(dz);
-                                } 
+                                }
                                 dz.hideArea();
                                 dz.hideNegationArea();
                             });
@@ -575,8 +575,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
             } else if (question.toolMode === VENN_DIAGRAM) {
 
-                this.addBackgroundComponent(window.bl.getResource('dock'), cc.p(this._windowSize.width / 2, 40))
-                this.addBackgroundComponent(window.bl.getResource('venn_diagram_3_colour'), cc.p(this._windowSize.width / 2, (this._windowSize.height / 2) + 30))
+                this.addBackgroundComponent(window.bl.getResource('dock'), cc.p(this._windowSize.width / 2, 40));
+                this.addBackgroundComponent(window.bl.getResource('venn_diagram_3_colour'), cc.p(this._windowSize.width / 2, (this._windowSize.height / 2) + 30));
                 
                 var radius = 198;
                 var circles = [
