@@ -1,24 +1,26 @@
 require.config({
     paths: {
         'circulardropzone': '../../tools/sorting/circulardropzone',
-        'splitdropzone': '../../tools/sorting/splitdropzone'
+        'splitdropzone': '../../tools/sorting/splitdropzone',
+        'venndiagram': '../../tools/sorting/VennDiagram',
+        'barchart': '../../tools/sorting/BarChart'
     }
 });
 
-define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer', 'stackedsprite', 'dropzone', 'draggable', 'draggableLayer', 'circulardropzone', 'splitdropzone', 'blbutton'], function (exports, cc, QLayer, BLDrawNode, Polygon, ToolLayer, StackedSprite, DropZone, Draggable, DraggableLayer, CircularDropZone, SplitDropZone, BlButton) {
+var DRAGGABLE_PREFIX = 'DRAGGABLE_';
+var DROPZONE_PREFIX = 'DROPZONE_';
+
+var DROPZONE_Z = 1;
+var LABEL_Z = 2;
+var DRAGGABLE_Z = 3;
+
+var BAR_CHART = 'bar';
+var VENN_DIAGRAM = 'venn';
+var TABLE_DIAGRAM = 'table';
+var BOXES_DIAGRAM = 'boxes';
+
+define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer', 'stackedsprite', 'dropzone', 'draggable', 'draggableLayer', 'circulardropzone', 'splitdropzone', 'blbutton', 'venndiagram', 'barchart'], function (exports, cc, QLayer, BLDrawNode, Polygon, ToolLayer, StackedSprite, DropZone, Draggable, DraggableLayer, CircularDropZone, SplitDropZone, BlButton, VennDiagram, BarChart) {
     'use strict';
-
-    var DRAGGABLE_PREFIX = 'DRAGGABLE_';
-    var DROPZONE_PREFIX = 'DROPZONE_';
-
-    var DROPZONE_Z = 1;
-    var LABEL_Z = 2;
-    var DRAGGABLE_Z = 3;
-
-    var BAR_CHART = 'bar';
-    var VENN_DIAGRAM = 'venn';
-    var TABLE_DIAGRAM = 'table';
-    var BOXES_DIAGRAM = 'boxes';
 
     window.bl.toolTag = 'sorting';
     var Tool = ToolLayer.extend({
@@ -198,7 +200,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 expression.push('<csymbol definitionURL="' + dg.definitionURL + '" />');
                 expression.push('<csymbol definitionURL="' + dz.definitionURL + '" />');
                 expression.push('</apply>');
-                self.question.symbols.lists.unclassified.mathml = self.question.symbols.lists.unclassified.mathml.replace('<csymbol definitionURL="' + dg.definitionURL + '" />', '');
+                self._question.symbols.lists.unclassified.mathml = self._question.symbols.lists.unclassified.mathml.replace('<csymbol definitionURL="' + dg.definitionURL + '" />', '');
             });
 
             _.each(exclusive, function (dz) {
@@ -211,15 +213,41 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             expression.push('</apply>');
 
             console.log({
-                symbols: this.question.symbols,
+                symbols: this._question.symbols,
                 expression: expression.join('')
             });
 
             return window.bl.expressionService.evaluateExpression({
-                symbols: this.question.symbols,
+                symbols: this._question.symbols,
                 expression: expression.join('')
             });
 
+        },
+
+        _setLength: undefined,
+        getSetLength: function () {
+            if (_.isUndefined(this._setLength)) {
+                this._setLength = 0;
+                for (var key in this._question.symbols.sets) {
+                    if (this._question.symbols.sets.hasOwnProperty(key)) {
+                        this._setLength++;
+                    }
+                }
+            }
+            return this._setLength;
+        },
+
+        _setMemberLength: undefined,
+        getSetMemberLength: function () {
+            if (_.isUndefined(this._setLength)) {
+                this._setLength = 0;
+                for (var key in this._question.symbols.set_members) {
+                    if (this._question.symbols.set_members.hasOwnProperty(key)) {
+                        this._setMemberLength++;
+                    }
+                }
+            }
+            return this._setMemberLength;
         },
 
         _barChartButton: undefined,
@@ -229,18 +257,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             var self = this;
 
             this._super(question);
+
             this.setBackground(window.bl.getResource('deep_water_background'));
             this.addBackgroundComponent(window.bl.getResource('dock'), cc.p(this._windowSize.width / 2, 40));
-
-            var setLength = 0, key;
-            for (key in question.symbols.sets) {
-                if (question.symbols.sets.hasOwnProperty(key)) setLength++;
-            }
-
-            var setMemberLength = 0;
-            for (key in question.symbols.set_members) {
-                if (question.symbols.set_members.hasOwnProperty(key)) setMemberLength++;
-            }
 
             var members = $($.parseXML(question.symbols.lists.unclassified.mathml)).find('csymbol').toArray().map(function(csymbol) { var id = $(csymbol).attr('definitionURL').match(/[^/]+$/)[0]; return question.symbols.set_members[id]; });
 
@@ -249,96 +268,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
                 this.addBackgroundComponent(window.bl.getResource('x_axis'), cc.p(this._windowSize.width / 2, 145));
                 
-                for (var i = 0; i < setLength; i++) {
-                    var dz = this.addDropZone({
-                        x:140 + (i * 155), y:153},
-                        bl.PolyRectMake(0, 0, 120, 600),
-                        question.symbols.sets['set' + i].label,
-                        question.symbols.sets['set' + i].definitionURL);
-                    dz._label.setPosition(60, -20);
-                    dz._label.setFontSize(20);
-                }
-
-                var placed = 0;
-                var maxCards = 6;
-                var spaceHeight = 600 / maxCards;
-                var colours = [cc.c4FFromccc4B({r:241,g:201,b:46,a:255}), cc.c4FFromccc4B({r:45,g:211,b:43,a:255}), cc.c4FFromccc4B({r:47,g:185,b:196,a:255}), cc.c4FFromccc4B({r:226,g:68,b:46,a:255}), cc.c4FFromccc4B({r:244,g:100,b:185,a:255})];
-                _.each(members, function (creature, k) {
-
-                    var sprite = new StackedSprite();
-                    sprite.setup({ layers: creature.sprite });
-                    self.addDraggable({x:510, y:60}, sprite, creature.definitionURL, undefined, function (position, draggable) {
-                        var dzs = self.getControls(DROPZONE_PREFIX);
-                        var inclusive = [];
-                        var exclusive = [];
-                        _.each(dzs, function(dz) {
-                            if (dz.containsPoint(position)) {
-                                dz.findPositionFor(draggable);
-                                inclusive.push(dz);
-                                dz.placed = dz.placed || 0;
-                                dz.placed++;
-                            } else {
-                                exclusive.push(dz);
-                            }
-                            dz.hideArea();
-                        });
-                        if (!self.checkValid(draggable, inclusive, exclusive)) {
-                            draggable.returnToLastPosition(true);
-                            _.each(inclusive, function (dz) {
-                                dz.placed--;
-                            });
-                        } else {
-                            placed++;
-                            draggable.setTouchEnabled(false);
-
-                            var action = bl.animation.moveAndRotateTo(0.2, cc.p(inclusive[0].getPosition().x + 60, inclusive[0].getPosition().y + (inclusive[0].placed * 100) - 50), _.random(-10, 10));
-                            draggable.runAction(action);
-
-                            if (placed >= setMemberLength) {
-                                action = bl.animation.popIn();
-
-                                // show bar chart button
-                                this._barChartButton = new BlButton.create(bl.getResource('barchart_button'));
-                                this._barChartButton.setPosition(cc.p(100, 70));
-                                this._barChartButton.onTouchUp(function (postion, btn) {
-
-                                    btn.setOpacity(255/2);
-                                    btn.setEnabled(false);
-                                    
-                                    var dgs = self.getControls(DRAGGABLE_PREFIX);
-                                    _.each(dgs, function(dg) {
-                                        dg.setVisible(false);
-                                    });
-                                    var maxPlaced = _.max(dzs, function(dz) { return dz.placed; }).placed;
-                                    _.each(dzs, function(dz, i) {
-                                        dz.area.clear();
-                                        dz.area.drawPoly(bl.PolyRectMake(0, -4, 120, dz.placed * spaceHeight), colours[i], 2, cc.c4f(1,2,1,1));
-                                        dz.showArea();
-                                    });
-
-                                    // add y axis
-                                    self.yAxis = new BLDrawNode();
-                                    self.yAxis.setZOrder(1);
-                                    self.addChild(self.yAxis);
-                                    self.yAxis.drawPoly(bl.PolyRectMake(115, 145, 0, 610), cc.c4f(1,1,1,1), 3, cc.c4f(1,1,1,1));
-
-                                    _.times(maxCards + 1, function (i) {
-                                        self.yAxis.drawPoly(bl.PolyRectMake(95, 148 + i * spaceHeight, 20, 0), cc.c4f(1,1,1,1), 3, cc.c4f(1,1,1,1));
-                                        var label = cc.LabelTTF.create(i, "mikadoBold", 20);
-                                        label.setColor(cc.c3b(255,255,255));
-                                        self.addChild(label);
-                                        label.setPosition(cc.p(75, 148 + i * spaceHeight));
-                                    });
-                                });
-
-                                this._barChartButton.runAction(action);
-                                self.addChild(this._barChartButton, 10);
-
-                            }
-
-                        }
-                    });
-                });
+                var barChart = new BarChart(this, question, members);
+                this.addChild(barChart);
 
             } else if (question.toolMode === BOXES_DIAGRAM) {
 
@@ -585,75 +516,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 this.addBackgroundComponent(window.bl.getResource('dock'), cc.p(this._windowSize.width / 2, 40));
                 this.addBackgroundComponent(window.bl.getResource('venn_diagram_3_colour'), cc.p(this._windowSize.width / 2, (this._windowSize.height / 2) + 30));
                 
-                var radius = 198;
-                var circles = [
-                    {
-                        r: radius,
-                        p: cc.p(208, 129),
-                        label: question.symbols.sets.set0.label,
-                        definitionURL: question.symbols.sets.set0.definitionURL
-                    },
-                    {
-                        r: radius,
-                        p: cc.p(416, 129),
-                        label: question.symbols.sets.set1.label,
-                        definitionURL: question.symbols.sets.set1.definitionURL
-                    },
-                    {
-                        r: radius,
-                        p: cc.p(this._windowSize.width / 2 - (radius + 2), (this._windowSize.height / 2) - 78),
-                        label: question.symbols.sets.set2.label,
-                        definitionURL: question.symbols.sets.set2.definitionURL
-                    }
-                ];
-
-                _.each(circles, function (c1, i) {
-                    var path1 = cc.DrawNode.generateCircle(cc.p(c1.r, c1.r), c1.r);
-                    path1 = _.map(path1, function(p) {
-                        return cc.p(p.x + c1.p.x, p.y + c1.p.y);
-                    });
-                    path1 = Polygon.fromCCPoints(path1);
-
-                    // this is the start of working out all the segments
-                    // _.each(circles, function (c2, j) {
-                    //     if (i !== j) {
-
-                    //         var path2 = cc.DrawNode.generateCircle(cc.p(c2.r, c2.r), c2.r);
-                    //         // offset this path based on it's position
-                    //         path2 = _.map(path2, function(p) {
-                    //             return cc.p(p.x + c2.p.x, p.y + c2.p.y);
-                    //         });
-                    //         path2 = Polygon.fromCCPoints(path2);
-
-                    //         path1 = path2.clip(path1, 'difference')[0];
-
-                    //     }
-
-                    // });
-
-                    var path = Polygon.toCCPoints(path1.points);
-                    path = _.map(path, function (p) {
-                        return cc.p(p.x - c1.p.x, p.y - c1.p.y);
-                    });
-                    var dz = self.addCircularDropZone(c1.p, path, c1.label, c1.definitionURL);
-
-                    if (i === 0) {
-                        dz._label.setRotation(45);
-                        dz._label.setPosition(cc.p(dz.getContentSize().width * -0.0001, dz.getContentSize().height * -0.0001));
-                    } else if (i === 1) {
-                        dz._label.setRotation(-45);
-                        dz._label.setPosition(cc.p(dz.getContentSize().width * 1, dz.getContentSize().height * -0.0001));
-                    } else if (i === 2) {
-                        dz._label.setPosition(cc.p(dz.getContentSize().width * 0.5, dz.getContentSize().height * 1.1));
-                    }
-
-                });
-
-                _.each(members, function (creature, k) {
-                    var sprite = new StackedSprite();
-                    sprite.setup({ layers: creature.sprite });
-                    self.addDraggable({x:self._windowSize.width / 2, y:60}, sprite, creature.definitionURL);
-                });
+                var venn = new VennDiagram(this, question, members);
+                this.addChild(venn);
 
             }
         }
