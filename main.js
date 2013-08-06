@@ -102,6 +102,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 if (!self.checkValid(draggable, inclusive, exclusive)) {
                     draggable.returnToLastPosition(true);
                 } else {
+                    draggable.setTouchEnabled(false);
                     draggable.setRotation(_.random(-10, 10));
                 }
             };
