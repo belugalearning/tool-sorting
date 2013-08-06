@@ -100,7 +100,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     dz.hideArea();
                 });
                 if (!self.checkValid(draggable, inclusive, exclusive)) {
-                    draggable.returnToLastPosition();
+                    draggable.returnToLastPosition(true);
                 } else {
                     draggable.setRotation(_.random(-10, 10));
                 }
@@ -282,17 +282,19 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                             dz.hideArea();
                         });
                         if (!self.checkValid(draggable, inclusive, exclusive)) {
-                            draggable.returnToLastPosition();
+                            draggable.returnToLastPosition(true);
                             _.each(inclusive, function (dz) {
                                 dz.placed--;
                             });
                         } else {
                             placed++;
                             draggable.setTouchEnabled(false);
-                            draggable.setRotation(_.random(-10, 10));
-                            draggable.setPosition(cc.p(inclusive[0].getPosition().x + 60, inclusive[0].getPosition().y + (inclusive[0].placed * 100) - 50));
+
+                            var action = bl.animation.moveAndRotateTo(0.2, cc.p(inclusive[0].getPosition().x + 60, inclusive[0].getPosition().y + (inclusive[0].placed * 100) - 50), _.random(-10, 10));
+                            draggable.runAction(action);
+
                             if (placed >= setMemberLength) {
-                                var action = bl.animation.popIn();
+                                action = bl.animation.popIn();
 
                                 // show bar chart button
                                 this._barChartButton = new BlButton.create(bl.getResource('barchart_button'));
@@ -516,57 +518,61 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                             });
 
                             if (inclusive.length + exclusive.length < 2 || !self.checkValid(draggable, inclusive, exclusive)) {
-                                draggable.returnToLastPosition();
+                                draggable.returnToLastPosition(true);
                             } else {
                                 var nearest_spot = window.bl.getClosestPoint(position, drop_spots);
 
-                                draggable.setPosition(nearest_spot);
                                 var rotation = _.random(-10, 10);
-                                draggable.setRotation(rotation);
 
-                                var sub_totals = [0,0,0,0];
-                                var totals = {};
-                                var dgs = self.getControls(DRAGGABLE_PREFIX);
+                                var action = bl.animation.moveAndRotateTo(0.2, nearest_spot, rotation, function () {
 
-                                // update sub_totals
-                                var updated_sub_total_index = 0;
-                                _.each(drop_spots, function (spot, i) {
-                                    _.each(dgs, function (dg, j) {
-                                        if (dg.getPosition().x === spot.x && dg.getPosition().y === spot.y) {
-                                            sub_totals[i] += 1;
-                                            updated_sub_total_index = i;
-                                            return;
-                                        }
+                                    var sub_totals = [0,0,0,0];
+                                    var dgs = self.getControls(DRAGGABLE_PREFIX);
+                                    var totals = {};
+
+                                    // update sub_totals
+                                    var updated_sub_total_index = 0;
+                                    _.each(drop_spots, function (spot, i) {
+                                        _.each(dgs, function (dg, j) {
+                                            if (dg.getPosition().x === spot.x && dg.getPosition().y === spot.y) {
+                                                sub_totals[i] += 1;
+                                                updated_sub_total_index = i;
+                                                return;
+                                            }
+                                        });
                                     });
+
+                                    _.each(sub_totals, function (v, i) {
+                                        var str = 'x' + v;
+                                        if (_.isUndefined(self._subTotalLabels[i])) {
+                                            self._subTotalLabels[i] = cc.LabelTTF.create(str, "mikadoBold", 12);
+                                            self._subTotalLabels[i].setPosition(cc.p(drop_spots[i].x + 15, drop_spots[i].y + 20));
+                                            self._subTotalLabels[i].setZOrder(500);
+                                            self._subTotalLabels[i].setColor(cc.c3b(224,161,40));
+                                            self._subTotalLabels[i].setAnchorPoint(cc.p(0, 0));
+                                            self.addChild(self._subTotalLabels[i]);
+                                        }
+                                        self._subTotalLabels[i].setVisible(v > 0);
+                                        if (i == updated_sub_total_index) {
+                                            self._subTotalLabels[i].setRotation(rotation);
+                                        }
+                                        self._subTotalLabels[i].setString(str);
+                                    });
+
+                                    self._totalLabels[0].setString(sub_totals[1] + sub_totals[3]);
+                                    self._totalLabels[1].setString(sub_totals[0] + sub_totals[2]);
+                                    self._totalLabels[2].setString(sub_totals[1] + sub_totals[0]);
+                                    self._totalLabels[3].setString(sub_totals[3] + sub_totals[2]);
+                                    var cumulative = 0;
+                                    var sums = _.map(sub_totals,function(num) {
+                                        cumulative += num;
+                                        return cumulative;
+                                    });
+                                    self._totalLabels[4].setString(sums[sums.length - 1]);
+
                                 });
 
-                                _.each(sub_totals, function (v, i) {
-                                    var str = 'x' + v;
-                                    if (_.isUndefined(self._subTotalLabels[i])) {
-                                        self._subTotalLabels[i] = cc.LabelTTF.create(str, "mikadoBold", 12);
-                                        self._subTotalLabels[i].setPosition(cc.p(drop_spots[i].x + 15, drop_spots[i].y + 20));
-                                        self._subTotalLabels[i].setZOrder(500);
-                                        self._subTotalLabels[i].setColor(cc.c3b(224,161,40));
-                                        self._subTotalLabels[i].setAnchorPoint(cc.p(0, 0));
-                                        self.addChild(self._subTotalLabels[i]);
-                                    }
-                                    self._subTotalLabels[i].setVisible(v > 0);
-                                    if (i == updated_sub_total_index) {
-                                        self._subTotalLabels[i].setRotation(rotation);
-                                    }
-                                    self._subTotalLabels[i].setString(str);
-                                });
-
-                                self._totalLabels[0].setString(sub_totals[1] + sub_totals[3]);
-                                self._totalLabels[1].setString(sub_totals[0] + sub_totals[2]);
-                                self._totalLabels[2].setString(sub_totals[1] + sub_totals[0]);
-                                self._totalLabels[3].setString(sub_totals[3] + sub_totals[2]);
-                                var cumulative = 0;
-                                var sums = _.map(sub_totals,function(num) {
-                                    cumulative += num;
-                                    return cumulative;
-                                });
-                                self._totalLabels[4].setString(sums[sums.length - 1]);
+                                draggable.runAction(action);
 
                             }
                         }
