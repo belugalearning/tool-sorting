@@ -298,7 +298,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
                                 // show bar chart button
                                 this._barChartButton = new BlButton.create(bl.getResource('barchart_button'));
-                                this._barChartButton.setPosition(cc.p(100, 100));
+                                this._barChartButton.setPosition(cc.p(100, 70));
                                 this._barChartButton.onTouchUp(function (postion, btn) {
 
                                     btn.setOpacity(255/2);
