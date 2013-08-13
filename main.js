@@ -26,18 +26,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'stackedsprit
     window.bl.toolTag = 'sorting';
     var Tool = ToolLayer.extend({
 
-        _windowSize: undefined,
-
         init: function () {
             var self = this;
 
             this._super();
 
             this.setTouchEnabled(true);
-
-            this._windowSize = cc.Director.getInstance().getWinSize();
-
-            cc.Director.getInstance().setDisplayStats(false);
 
             this.setQuestion(
               window.bl.contentService.question({
