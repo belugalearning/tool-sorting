@@ -140,6 +140,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'stackedsprit
             } else {
                 dz.initWithFile(bgResource);
             }
+            dz.setTag('dz' + this._dropzoneCounter);
             dz.setPosition(position.x, position.y);
             dz.setShape(shape);
             dz.setLabel(label);
