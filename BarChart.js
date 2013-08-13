@@ -18,7 +18,6 @@ define(['cocos2d', 'bldrawnode', 'underscore', 'dropzone', 'stackedsprite'], fun
                     question.symbols.sets['set' + i].definitionURL);
                 dz._label.setPosition(60, -20);
                 dz._label.setFontSize(20);
-                console.log(i, 'set' + i);
             }
 
             var placed = 0;
