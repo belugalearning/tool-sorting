@@ -2,7 +2,7 @@ require.config({
     paths: {}
 });
 
-define(['cocos2d', 'bldrawnode', 'underscore', 'dropzone', 'polygon', 'stackedsprite'], function (cc, BLDrawNode, _, DropZone, Polygon, StackedSprite) {
+define(['cocos2d', 'bldrawnode', 'underscore', 'dropzone', 'stackedsprite'], function (cc, BLDrawNode, _, DropZone, StackedSprite) {
     'use strict';
 
     var TableDiagram = cc.Layer.extend({

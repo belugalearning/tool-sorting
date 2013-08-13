@@ -20,7 +20,7 @@ var VENN_DIAGRAM = 'venn';
 var TABLE_DIAGRAM = 'table';
 var BOXES_DIAGRAM = 'boxes';
 
-define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer', 'stackedsprite', 'dropzone', 'draggable', 'draggableLayer', 'circulardropzone', 'splitdropzone', 'blbutton', 'venndiagram', 'barchart', 'tablediagram'], function (exports, cc, QLayer, BLDrawNode, Polygon, ToolLayer, StackedSprite, DropZone, Draggable, DraggableLayer, CircularDropZone, SplitDropZone, BlButton, VennDiagram, BarChart, TableDiagram) {
+define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'stackedsprite', 'dropzone', 'draggable', 'draggableLayer', 'circulardropzone', 'splitdropzone', 'blbutton', 'venndiagram', 'barchart', 'tablediagram'], function (exports, cc, QLayer, BLDrawNode, ToolLayer, StackedSprite, DropZone, Draggable, DraggableLayer, CircularDropZone, SplitDropZone, BlButton, VennDiagram, BarChart, TableDiagram) {
     'use strict';
 
     window.bl.toolTag = 'sorting';
