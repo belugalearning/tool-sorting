@@ -72,8 +72,6 @@ define(['cocos2d', 'bldrawnode', 'underscore', 'dropzone', 'stackedsprite'], fun
                         if (!parent.checkValid(draggable, inclusive, exclusive)) {
                             draggable.returnToLastPosition(true);
                         } else {
-                            // this is the start of working out all the segments
-                            
                             var intersection = self.generateIntersection(inclusive, exclusive);
                             var centroid = window.bl.polygonCentroid(intersection);
                             var rotation = _.random(-10, 10);
