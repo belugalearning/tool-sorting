@@ -33,6 +33,15 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'stackedsprit
 
             this.setTouchEnabled(true);
 
+            this.setQuestion(
+                window.bl.contentService.question({
+                    tool:'sorting',
+                    toolMode:'venn',
+                    setCategory:'creature',
+                    numSets:3
+                })
+            );
+
             return this;
         },
 
