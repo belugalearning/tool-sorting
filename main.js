@@ -236,8 +236,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'stackedsprit
 
         _setMemberLength: undefined,
         getSetMemberLength: function () {
-            if (_.isUndefined(this._setLength)) {
-                this._setLength = 0;
+            if (_.isUndefined(this._setMemberLength)) {
+                this._setMemberLength = 0;
                 for (var key in this._question.symbols.set_members) {
                     if (this._question.symbols.set_members.hasOwnProperty(key)) {
                         this._setMemberLength++;
@@ -264,7 +264,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'stackedsprit
             if (question.toolMode === BAR_CHART) {
 
                 this.addBackgroundComponent(window.bl.getResource('x_axis'), cc.p(this._windowSize.width / 2, 145));
-                
+
                 var barChart = new BarChart(this, question, members);
                 this.addChild(barChart);
 
@@ -281,7 +281,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'stackedsprit
             } else if (question.toolMode === TABLE_DIAGRAM) {
 
                 this.addBackgroundComponent(window.bl.getResource('table_frame'), cc.p(this._windowSize.width / 2, (this._windowSize.height / 2) + 40));
-                
+
                 // setup dropzones
                 var table = new TableDiagram(this, question, members);
                 this.addChild(table);
@@ -291,7 +291,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'stackedsprit
 
                 this.addBackgroundComponent(window.bl.getResource('dock'), cc.p(this._windowSize.width / 2, 40));
                 this.addBackgroundComponent(window.bl.getResource('venn_diagram_3_colour'), cc.p(this._windowSize.width / 2, (this._windowSize.height / 2) + 30));
-                
+
                 var venn = new VennDiagram(this, question, members);
                 this.addChild(venn);
 

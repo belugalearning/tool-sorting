@@ -2,7 +2,7 @@ require.config({
     paths: {}
 });
 
-define(['cocos2d', 'bldrawnode', 'underscore', 'dropzone', 'stackedsprite'], function (cc, BLDrawNode, _, DropZone, StackedSprite) {
+define(['cocos2d', 'bldrawnode', 'underscore', 'dropzone', 'stackedsprite', 'blbutton'], function (cc, BLDrawNode, _, DropZone, StackedSprite, BlButton) {
     'use strict';
 
     var BarChart = cc.Layer.extend({
@@ -66,7 +66,7 @@ define(['cocos2d', 'bldrawnode', 'underscore', 'dropzone', 'stackedsprite'], fun
 
                                 btn.setOpacity(255/2);
                                 btn.setEnabled(false);
-                                
+
                                 var dgs = parent.getControls(DRAGGABLE_PREFIX);
                                 _.each(dgs, function(dg) {
                                     dg.setVisible(false);
